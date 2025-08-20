@@ -777,6 +777,53 @@ class TestDataGenerator:
         })
     
     @classmethod
+    def generate_property_detail_response(cls, card_id: str) -> Dict[str, Any]:
+        """生成房源详情响应数据"""
+        # 根据卡片ID生成不同的房源详情
+        card_num_str = card_id.split("_")[-1]
+        
+        # 处理数字部分，如果无法转换为数字则使用默认值
+        try:
+            card_num = int(card_num_str) if card_num_str.isdigit() else 1
+        except (ValueError, IndexError):
+            card_num = 1
+        
+        property_detail = {
+            "id": card_id,
+            "type": "整租",
+            "title": f"测试房源 {card_num_str}",
+            "description": f"这是测试房源{card_num_str}的详细描述，包含房屋特色、周边环境等信息。",
+            "price": 2500 + card_num * 100,
+            "location": "北京市海淀区",
+            "area": 50 + card_num * 5,
+            "rooms": 2,
+            "floor": "5/18层",
+            "orientation": "南向",
+            "decoration": "精装修",
+            "images": [
+                f"https://picsum.photos/800/600?random=property{card_num_str}_1",
+                f"https://picsum.photos/800/600?random=property{card_num_str}_2",
+                f"https://picsum.photos/800/600?random=property{card_num_str}_3"
+            ],
+            "landlord": {
+                "id": f"landlord_{card_num_str}",
+                "name": f"房东{card_num_str}",
+                "avatar": f"https://picsum.photos/200/200?random=landlord{card_num_str}",
+                "phone": "13800138000",
+                "rating": 4.5 + float(card_num) * 0.1
+            },
+            "facilities": ["空调", "洗衣机", "冰箱", "热水器", "WiFi"],
+            "tags": ["近地铁", "拎包入住", "押一付一", "随时看房"],
+            "publishTime": "2024-01-15 10:00:00",
+            "contact": {
+                "phone": "13800138000",
+                "wechat": "landlord_wechat"
+            }
+        }
+        
+        return cls.wrap_response(property_detail)
+
+    @classmethod
     def generate_payment_response(cls, user_id: str = "") -> Dict[str, Any]:
         """生成支付响应数据"""
         payment = cls.generate_payment_info(user_id=user_id)
@@ -968,6 +1015,19 @@ class TestDataGenerator:
                 return cls.generate_membership_info_response("user_001")
             elif api_path == "/api/v1/membership/payment" and method == "POST":
                 return cls.generate_payment_response("user_001")
+                
+        # 房源/卡片详情API
+        elif api_path.startswith("/api/v1/properties"):
+            if method == "GET":
+                # 提取card_id
+                parts = api_path.split("/")
+                if len(parts) >= 5 and parts[4]:  # /api/v1/properties/{card_id}
+                    card_id = parts[4]
+                    # 检查是否是测试卡片或特定测试ID
+                    if card_id.startswith("card_") or card_id == "test_card":
+                        return cls.generate_property_detail_response(card_id)
+                    else:
+                        return cls.generate_error_response(1404, f"卡片 {card_id} 不存在")
                 
         # 默认返回错误响应
         return cls.generate_error_response(1404, "API不存在")

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, user, match, chat, profile, file, membership
+from app.routers import auth, user, match, chat, profile, file, membership, properties
 from app.config import settings
 from app.utils.test_middleware import register_test_middleware
 
@@ -30,6 +30,7 @@ app.include_router(chat.router, prefix="/api/v1/chat", tags=["聊天"])
 app.include_router(profile.router, prefix="/api/v1/profile", tags=["个人资料"])
 app.include_router(file.router, prefix="/api/v1", tags=["文件上传"])
 app.include_router(membership.router, prefix="/api/v1/membership", tags=["会员"])
+app.include_router(properties.router, prefix="/api/v1/properties", tags=["属性"])
 
 @app.get("/")
 async def root():
