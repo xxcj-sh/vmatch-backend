@@ -17,7 +17,7 @@ class TestAuthEndpoints:
         """测试微信登录接口"""
         response = client.post(
             "/api/v1/auth/login",
-            json={"code": "test_code", "userInfo": {"nickName": "测试用户", "avatarUrl": "https://example.com/avatar.jpg", "gender": 1}}
+            json={"code": "test_code", "userInfo": {"nickName": "测试用户", "avatarUrl": "https://picsum.photos/200/200?random=api-test", "gender": 1}}
         )
         assert response.status_code == 200
         data = response.json()

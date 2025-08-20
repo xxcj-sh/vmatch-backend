@@ -33,7 +33,7 @@ class TestUtils:
         return {
             "id": "test_user_001",
             "nickName": "测试用户",
-            "avatarUrl": "https://example.com/avatars/test_avatar.jpg",
+            "avatarUrl": "https://picsum.photos/200/200?random=test-avatar",
             "gender": 1,
             "age": 30,
             "occupation": "软件工程师",

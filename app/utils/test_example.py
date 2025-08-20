@@ -61,7 +61,7 @@ def run_examples():
     login_response = test_data_generator.mock_api_response(
         "/api/v1/auth/login", 
         "POST", 
-        {"code": "test_code", "userInfo": {"nickName": "测试用户", "avatarUrl": "https://example.com/avatar.jpg"}}
+        {"code": "test_code", "userInfo": {"nickName": "测试用户", "avatarUrl": "https://picsum.photos/200/200?random=example"}}
     )
     print("登录API响应:")
     print_json(login_response)

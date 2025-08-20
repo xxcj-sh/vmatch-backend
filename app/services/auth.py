@@ -61,7 +61,7 @@ class AuthService:
                 "id": "test_user_001",
                 "phone": "13800138000",
                 "nickName": "测试用户",
-                "avatarUrl": "https://example.com/avatars/test_avatar.jpg",
+                "avatarUrl": "https://picsum.photos/200/200?random=100",
                 "gender": 1,
                 "age": 30,
                 "occupation": "软件工程师",
@@ -121,7 +121,7 @@ class AuthService:
                     "id": "user_001",
                     "openid": openid,
                     "nickName": "测试用户",
-                    "avatarUrl": "https://example.com/test.jpg",
+                    "avatarUrl": "https://picsum.photos/200/200?random=101",
                     "gender": 1,
                     "age": 28,
                     "occupation": "软件工程师",
@@ -142,7 +142,7 @@ class AuthService:
             else:
                 # Update the existing test user
                 test_user["nickName"] = "测试用户"
-                test_user["avatarUrl"] = "https://example.com/test.jpg"
+                test_user["avatarUrl"] = "https://picsum.photos/200/200?random=102"
                 test_user["gender"] = 1
                 user = test_user
         else:
@@ -157,7 +157,7 @@ class AuthService:
             user_data = {
                 "openid": openid,
                 "nickName": user_info.nick_name if user_info and user_info.nick_name else f"用户{len(mock_data_service.users) + 1}",
-                "avatarUrl": user_info.avatar_url if user_info and user_info.avatar_url else "https://example.com/default-avatar.jpg",
+                "avatarUrl": user_info.avatar_url if user_info and user_info.avatar_url else "https://picsum.photos/200/200?random=default",
                 "gender": user_info.gender if user_info and user_info.gender is not None else 0,
                 "age": None,
                 "occupation": None,
@@ -214,7 +214,7 @@ class AuthService:
                     "id": "test_user_001",
                     "phone": "13800138000",
                     "nickName": "测试用户",
-                    "avatarUrl": "https://example.com/avatars/test_avatar.jpg",
+                    "avatarUrl": "https://picsum.photos/200/200?random=103",
                     "gender": 1,
                     "age": 30,
                     "occupation": "软件工程师",
@@ -263,7 +263,7 @@ class AuthService:
             user_data = {
                 "phone": phone,
                 "nickName": f"用户{len(mock_data_service.users) + 1}",
-                "avatarUrl": "https://example.com/default-avatar.jpg",
+                "avatarUrl": "https://picsum.photos/200/200?random=default",
                 "gender": 0,
                 "age": None,
                 "occupation": None,
@@ -373,7 +373,7 @@ class AuthService:
         new_user_data = {
             "phone": phone,
             "nickName": user_data.get("nickName", f"用户{len(mock_data_service.users) + 1}"),
-            "avatarUrl": user_data.get("avatarUrl", "https://example.com/default-avatar.jpg"),
+            "avatarUrl": user_data.get("avatarUrl", "https://picsum.photos/200/200?random=default"),
             "gender": user_data.get("gender", 0),
             "age": user_data.get("age"),
             "occupation": user_data.get("occupation"),

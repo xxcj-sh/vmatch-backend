@@ -15,7 +15,7 @@ class TestAuth:
                 "code": fixed_code,
                 "userInfo": {
                     "nickName": "测试用户",
-                    "avatarUrl": "https://example.com/test.jpg",
+                    "avatarUrl": "https://picsum.photos/200/200?random=test",
                     "gender": 1
                 }
             }

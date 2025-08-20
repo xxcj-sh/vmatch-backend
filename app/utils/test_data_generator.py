@@ -106,13 +106,13 @@ class TestDataGenerator:
     def random_avatar() -> str:
         """生成随机头像URL"""
         avatar_id = random.randint(1, 100)
-        return f"https://example.com/avatars/avatar{avatar_id}.jpg"
+        return f"https://picsum.photos/200/200?random=avatar{avatar_id}"
     
     @staticmethod
     def random_image() -> str:
         """生成随机图片URL"""
         image_id = random.randint(1, 100)
-        return f"https://example.com/images/image{image_id}.jpg"
+        return f"https://picsum.photos/400/300?random=image{image_id}"
     
     @staticmethod
     def random_location() -> str:
@@ -168,7 +168,7 @@ class TestDataGenerator:
             return {
                 "id": "user_001",
                 "nickName": "测试用户",
-                "avatarUrl": "https://example.com/test.jpg",
+                "avatarUrl": "https://picsum.photos/200/200?random=test1",
                 "gender": 1,
                 "age": 25,
                 "occupation": "软件工程师",
@@ -192,7 +192,7 @@ class TestDataGenerator:
             return {
                 "id": "user_test_fixed",
                 "nickName": "测试用户",
-                "avatarUrl": "https://example.com/test.jpg",
+                "avatarUrl": "https://picsum.photos/200/200?random=test2",
                 "gender": 1,
                 "age": 25,
                 "occupation": "软件工程师",
@@ -417,11 +417,11 @@ class TestDataGenerator:
         file_id = cls.generate_id("file_")
         
         url_map = {
-            "image": f"https://example.com/uploads/images/{file_id}.jpg",
+            "image": f"https://picsum.photos/400/300?random=upload-image-{file_id}",
             "voice": f"https://example.com/uploads/voice/{file_id}.mp3",
             "video": f"https://example.com/uploads/video/{file_id}.mp4",
             "document": f"https://example.com/uploads/docs/{file_id}.pdf",
-            "avatar": f"https://example.com/uploads/avatars/{file_id}.jpg"
+            "avatar": f"https://picsum.photos/200/200?random=upload-avatar-{file_id}"
         }
         
         return {
@@ -444,7 +444,7 @@ class TestDataGenerator:
                 "userInfo": {
                     "id": "user_test_fixed",
                     "nickName": "测试用户",
-                    "avatarUrl": "https://example.com/test.jpg",
+                    "avatarUrl": "https://picsum.photos/200/200?random=test3",
                     "gender": 1,
                     "age": 25
                 }

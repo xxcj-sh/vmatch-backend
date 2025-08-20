@@ -23,7 +23,7 @@ class MockDataService:
         test_user = self.create_user({
             "id": "user_001",  # 固定ID用于测试
             "nickName": "测试用户",
-            "avatarUrl": "https://example.com/avatar1.jpg",
+            "avatarUrl": "https://picsum.photos/200/200?random=avatar1",
             "gender": 1,
             "age": 28,
             "occupation": "软件工程师",
@@ -42,7 +42,7 @@ class MockDataService:
         self.create_user({
             "id": "card_001",  # 固定ID用于测试
             "nickName": "测试卡片用户",
-            "avatarUrl": "https://example.com/avatar2.jpg",
+            "avatarUrl": "https://picsum.photos/200/200?random=avatar2",
             "gender": 2,
             "age": 26,
             "occupation": "设计师",
@@ -63,7 +63,7 @@ class MockDataService:
             self.create_card({
                 "id": card_id,
                 "name": f"测试卡片{i}",
-                "avatar": f"https://example.com/avatar{i}.jpg",
+                "avatar": f"https://picsum.photos/200/200?random=card{i}",
                 "age": random.randint(25, 35),
                 "occupation": random.choice(["软件工程师", "设计师", "产品经理", "市场专员"]),
                 "distance": f"{random.randint(1, 15)}km",
@@ -281,7 +281,7 @@ class MockDataService:
         # 模拟文件上传
         file_id = str(uuid.uuid4())
         return {
-            "url": f"https://example.com/uploads/{file_type}/{file_id}.jpg"
+            "url": f"https://picsum.photos/400/300?random=upload-{file_type}-{file_id}"
         }
 
 mock_data_service = MockDataService()

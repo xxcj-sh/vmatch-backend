@@ -122,14 +122,14 @@ class TestModeMiddleware(BaseHTTPMiddleware):
                     "data": {
                         "id": "card_001",
                         "nickname": "用户昵称",  # 使用 nickname 而不是 nickName
-                        "avatar": "https://example.com/avatars/avatar1.jpg",  # 使用 avatar 而不是 avatarUrl
+                        "avatar": "https://picsum.photos/200/200?random=avatar1",  # 使用 avatar 而不是 avatarUrl
                         "age": 28,
                         "gender": "男",
                         "location": "北京",
                         "occupation": "软件工程师",
                         "education": "本科",
                         "bio": "这是一个测试账号",
-                        "photos": [{"url": "https://example.com/avatars/avatar1.jpg", "type": "avatar"}],
+                        "photos": [{"url": "https://picsum.photos/200/200?random=avatar1", "type": "avatar"}],
                         "interests": ["旅行", "摄影", "音乐"],
                         "preferences": {},
                         "tenantInfo": None
@@ -172,7 +172,7 @@ class TestModeMiddleware(BaseHTTPMiddleware):
                             "userInfo": {
                                 "id": "integration_user",
                                 "nickName": "集成测试用户",
-                                "avatarUrl": "https://example.com/integration.jpg",
+                                "avatarUrl": "https://picsum.photos/200/200?random=integration",
                                 "gender": 1,
                                 "age": 30
                             }
@@ -259,11 +259,11 @@ class TestModeMiddleware(BaseHTTPMiddleware):
                         "bio": "这是集成测试的更新",
                         "age": 30,
                         "occupation": "测试工程师",
-                        "avatarUrl": "https://example.com/integration.jpg",
+                        "avatarUrl": "https://picsum.photos/200/200?random=integration",
                         "gender": "男",
                         "location": "北京",
                         "education": "本科",
-                        "photos": [{"url": "https://example.com/integration.jpg", "type": "avatar"}],
+                        "photos": [{"url": "https://picsum.photos/200/200?random=integration", "type": "avatar"}],
                         "interests": ["旅行", "摄影", "音乐"],
                         "preferences": {},
                         "tenantInfo": None

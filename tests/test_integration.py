@@ -14,7 +14,7 @@ class TestIntegration:
                 "code": "integration_test_code",
                 "userInfo": {
                     "nickName": "集成测试用户",
-                    "avatarUrl": "https://example.com/integration.jpg",
+                    "avatarUrl": "https://picsum.photos/200/200?random=integration",
                     "gender": 1
                 }
             }
