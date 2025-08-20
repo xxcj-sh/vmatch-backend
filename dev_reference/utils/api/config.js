@@ -1,6 +1,10 @@
 // API 配置
+const { getCurrentEnvConfig } = require('./env');
+
+const envConfig = getCurrentEnvConfig();
+
 const API_CONFIG = {
-  baseURL: 'http://localhost:8000/api/v1', // 仅在非测试模式下使用
+  baseURL: envConfig.baseURL,
   timeout: 10000,
   retryCount: 3
 };

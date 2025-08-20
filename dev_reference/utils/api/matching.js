@@ -14,8 +14,14 @@ class MatchingAPI extends ApiClient {
     // 生产模式：使用真实API
     console.log('生产模式：调用真实API获取匹配卡片');
     return this.request({
-      url: `/cards/match?type=${matchType}&userRole=${userRole}&page=${page}&pageSize=${pageSize}`,
-      method: 'GET'
+      url: '/cards/match',
+      method: 'GET',
+      data: {
+        type: matchType,
+        userRole: userRole,
+        page: page,
+        pageSize: pageSize
+      }
     });
   }
 
@@ -439,10 +445,26 @@ class MatchingAPI extends ApiClient {
   }
 
   // 获取匹配列表（matches页面使用）
-  async getMatches(status = null) {
+  async getMatches(status = null, page = 1, pageSize = 10) {
     // 测试模式：返回模拟匹配数据
-    console.log('测试模式：使用模拟匹配列表数据');
-    return this.getMockMatches(status);
+    const isTestMode = wx.getStorageSync('testMode') || false;
+    
+    if (isTestMode) {
+      console.log('测试模式：使用模拟匹配列表数据');
+      return this.getMockMatches(status);
+    }
+    
+    // 生产模式：使用真实API
+    console.log('生产模式：调用真实API获取匹配列表');
+    return this.request({
+      url: '/match/list',
+      method: 'GET',
+      data: {
+        status,
+        page,
+        pageSize
+      }
+    });
   }
 
   // 获取模拟匹配数据（matches页面测试用）

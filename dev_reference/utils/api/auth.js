@@ -1,4 +1,5 @@
 const ApiClient = require('./client');
+const { STORAGE_KEYS } = require('./config');
 
 class AuthAPI extends ApiClient {
   // 微信登录
@@ -34,7 +35,18 @@ class AuthAPI extends ApiClient {
       this.setToken(data.token, data.expiresIn);
       
       // 保存用户信息
-      wx.setStorageSync(this.STORAGE_KEYS.USER_INFO, data.userInfo);
+      console.log('保存用户信息前检查:', {data: data, STORAGE_KEYS: STORAGE_KEYS});
+      if (!STORAGE_KEYS) {
+        console.error('STORAGE_KEYS未定义');
+      } else if (!STORAGE_KEYS.USER_INFO) {
+        console.error('STORAGE_KEYS.USER_INFO未定义');
+      } else if (!data) {
+        console.error('data未定义');
+      } else if (!data.userInfo) {
+        console.error('data.userInfo未定义');
+      } else {
+        wx.setStorageSync(STORAGE_KEYS.USER_INFO, data.userInfo);
+      }
       
       return data;
     } catch (error) {

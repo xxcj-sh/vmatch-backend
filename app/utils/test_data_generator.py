@@ -234,12 +234,128 @@ class TestDataGenerator:
         }
     
     @classmethod
-    def generate_card(cls, card_id: str = "") -> Dict[str, Any]:
-        """生成卡片数据"""
-        gender = random.randint(1, 2)
-        age = random.randint(18, 45)
+    def generate_house_info(cls) -> Dict[str, Any]:
+        """生成房源信息数据"""
+        house_types = ["温馨一居室", "现代两居室", "loft复式公寓", "精装三居室", "简约单间", "豪华公寓"]
+        orientations = ["南向", "北向", "东向", "西向", "南北通透", "东南向"]
+        decorations = ["精装修", "简装修", "毛坯", "现代简约", "北欧风格", "中式风格"]
+        communities = ["阳光小区", "绿城花园", "星河湾", "华清嘉园", "万科城市花园", "保利香槟国际"]
+        locations = ["朝阳区", "海淀区", "西城区", "东城区", "丰台区", "石景山区"]
+        features_list = [
+            ["近地铁", "拎包入住", "家电齐全"],
+            ["南北通透", "双阳台", "近商圈"],
+            ["loft设计", "高层景观", "智能家居"],
+            ["南向采光", "地铁沿线", "有车位"],
+            ["花园洋房", "低密度", "学区房"],
+            ["近公园", "精装修", "业主直租"]
+        ]
         
-        return {
+        house = {
+            "id": cls.generate_id("house_"),
+            "title": random.choice(house_types),
+            "images": [cls.random_image() for _ in range(random.randint(3, 6))],
+            "price": random.randint(2000, 8000),
+            "area": random.randint(30, 120),
+            "orientation": random.choice(orientations),
+            "floor": f"{random.randint(1, 30)}/{random.randint(10, 35)}",
+            "hasElevator": cls.random_boolean(),
+            "decoration": random.choice(decorations),
+            "community": random.choice(communities),
+            "location": random.choice(locations),
+            "deposit": random.choice(["押一付一", "押一付二", "押一付三", "押二付一"]),
+            "features": random.choice(features_list),
+            "videoUrl": random.choice([
+                # 本地可访问的测试视频URL，避免外部依赖
+                "https://cdn.pixabay.com/video/2024/02/03/199109-909564730_tiny.mp4",
+                "https://cdn.pixabay.com/video/2023/04/08/157989-815894934_tiny.mp4",
+                "https://cdn.pixabay.com/video/2023/09/30/183008-869941724_tiny.mp4",
+                "https://cdn.pixabay.com/video/2025/03/21/266435_tiny.mp4",
+                "https://cdn.pixabay.com/video/2021/08/30/86867-594991237_tiny.mp4",
+                "https://cdn.pixabay.com/video/2025/06/13/285663_tiny.mp4"
+            ])
+        }
+        
+        return house
+
+    @classmethod
+    def generate_landlord_info(cls, user_id: str = None) -> Dict[str, Any]:
+        """生成房东信息数据
+        
+        Args:
+            user_id: 关联的用户ID，如果提供则使用此ID作为房东ID
+        """
+        gender = random.randint(1, 2)
+        age = random.randint(28, 50)
+        
+        # 如果提供了user_id，则使用它作为房东ID，确保与用户系统关联
+        if user_id:
+            landlord_id = user_id
+        else:
+            # 否则使用预定义的测试用户ID，确保测试数据一致性
+            landlord_id = random.choice([
+                "user_001", "user_002", "user_003", "user_004", "user_005",
+                "test_landlord_001", "test_landlord_002", "test_landlord_003"
+            ])
+        
+        landlord = {
+            "id": landlord_id,
+            "name": cls.random_name(gender),
+            "avatar": cls.random_avatar(),
+            "occupation": random.choice(["产品经理", "互联网创业者", "UI设计师", "自由职业者", "企业高管", "投资人"]),
+            "verified": cls.random_boolean(),
+            "responseRate": f"{random.randint(90, 99)}%",
+            "joinDate": cls.random_timestamp(1095),  # 3年内
+            "bio": random.choice([
+                "连续创业者，目前经营一家互联网公司。为人直爽，好沟通，希望为租客提供舒适的居住体验。",
+                "资深产品经理，热爱生活的房东，希望找到一位爱干净的租客，一起维护温馨的小家。",
+                "独立UI设计师，热爱艺术与设计，注重生活品质，希望与有趣的租客共享空间。",
+                "自由职业者，房源位于核心区域，交通便利，期待有缘的租客。",
+                "企业高管，多套房源，管理经验丰富，致力于为租客打造高品质的居住环境。"
+            ])
+        }
+        
+        return landlord
+
+    @classmethod
+    def generate_tenant_info(cls) -> Dict[str, Any]:
+        """生成租客信息数据"""
+        budget_ranges = [2000, 3000, 4000, 5000, 6000, 8000]
+        room_types = ["单间", "一居室", "两居室", "三居室", "loft公寓"]
+        areas = ["朝阳区", "海淀区", "西城区", "东城区", "丰台区", "石景山区", "望京", "五道口", "中关村"]
+        
+        tenant = {
+            "budget": random.choice(budget_ranges),
+            "moveInDate": (datetime.now() + timedelta(days=random.randint(7, 60))).strftime("%Y-%m-%d"),
+            "preferredAreas": random.sample(areas, random.randint(1, 3)),
+            "roomType": random.choice(room_types),
+            "leaseDuration": random.choice(["半年", "一年", "一年以上", "可商量"]),
+            "workLocation": random.choice(["字节跳动总部", "中关村软件园", "国贸CBD", "望京SOHO", "金融街", "亦庄开发区"]),
+            "workType": random.choice(["互联网", "金融", "教育", "医疗", "制造业", "服务业"]),
+            "hasPet": cls.random_boolean(),
+            "smoking": cls.random_boolean(),
+            "drinking": random.choice(["从不", "偶尔", "经常"]),
+            "cleanliness": random.choice(["非常爱干净", "比较整洁", "一般", "不太在意"]),
+            "socialLevel": random.choice(["很安静", "适中", "比较活跃", "非常外向"]),
+            "cooking": random.choice(["经常做饭", "偶尔做饭", "很少做饭", "从不做饭"])
+        }
+        
+        return tenant
+
+    @classmethod
+    def generate_card(cls, card_id: str = "", match_type: str = "dating", user_role: str = "seeker", landlord_user_id: str = None) -> Dict[str, Any]:
+        """生成卡片数据
+        
+        Args:
+            card_id: 卡片ID
+            match_type: 匹配类型 (dating, housing, activity)
+            user_role: 用户角色 (seeker, provider)
+            landlord_user_id: 房东用户ID，确保与用户系统关联
+        """
+        gender = random.randint(1, 2)
+        age = random.randint(18, 50)
+        
+        # 基础卡片数据
+        card_data = {
             "id": card_id if card_id else cls.generate_id("card_"),
             "name": cls.random_name(gender),
             "avatar": cls.random_avatar(),
@@ -247,14 +363,55 @@ class TestDataGenerator:
             "age": age,
             "occupation": cls.random_occupation(),
             "location": cls.random_location(),
-            "distance": f"{random.randint(1, 20)}km",
+            "distance": f"{random.uniform(0.1, 5.0):.1f}km",
             "bio": cls.random_bio(),
             "education": cls.random_education(),
             "interests": cls.random_interests(),
-            "photos": [cls.random_image() for _ in range(random.randint(1, 5))],
-            "matchType": random.choice(["dating", "friendship", "business"]),
-            "tags": cls.random_elements(["有趣", "善良", "聪明", "幽默", "温柔", "阳光", "活泼", "稳重", "成熟", "可靠"], random.randint(2, 4))
+            "matchType": match_type,
+            "userRole": user_role
         }
+        
+        # 根据匹配类型添加特定数据
+        if match_type == "housing":
+            if user_role == "seeker":
+                # 租客角色：显示房源信息
+                # 确保房东ID从预定义的测试用户中选择
+                if not landlord_user_id:
+                    landlord_user_id = random.choice([
+                        "user_001", "user_002", "user_003", "user_004", "user_005"
+                    ])
+                card_data.update({
+                    "houseInfo": cls.generate_house_info(),
+                    "landlordInfo": cls.generate_landlord_info(landlord_user_id)
+                })
+            else:  # provider
+                # 房东角色：显示租客信息
+                card_data.update({
+                    "tenantInfo": cls.generate_tenant_info()
+                })
+        elif match_type == "dating":
+            # 约会匹配数据
+            card_data.update({
+                "height": random.randint(155, 185),
+                "education": cls.random_education(),
+                "income": random.choice(["5k-10k", "10k-15k", "15k-20k", "20k-30k", "30k+"]),
+                "hobbies": cls.random_interests(),
+                "lookingFor": random.choice([
+                    "真诚善良的女生", "有趣幽默的男生", "成熟稳重的伴侣", "志同道合的朋友"
+                ])
+            })
+        elif match_type == "activity":
+            # 活动匹配数据
+            card_data.update({
+                "activityName": random.choice(["周末爬山", "摄影外拍", "读书会", "桌游聚会", "徒步旅行"]),
+                "activityType": random.choice(["户外运动", "文化艺术", "社交聚会", "学习交流"]),
+                "activityTime": random.choice(["周六上午", "周日下午", "工作日晚间", "随时"]),
+                "activityLocation": cls.random_location(),
+                "activityPrice": random.randint(0, 200),
+                "description": cls.random_bio()
+            })
+        
+        return card_data
     
     @classmethod
     def generate_match(cls, match_id: str = "", user_id: str = "", card_id: str = "") -> Dict[str, Any]:
@@ -512,14 +669,16 @@ class TestDataGenerator:
         })
     
     @classmethod
-    def generate_match_cards_response(cls, count=10) -> Dict[str, Any]:
+    def generate_match_cards_response(cls, count=10, match_type="dating", user_role="seeker") -> Dict[str, Any]:
         """生成匹配卡片列表响应数据"""
         # Ensure count is an integer
         try:
             count_int = int(count)
         except (ValueError, TypeError):
             count_int = 10
-        cards = [cls.generate_card() for _ in range(count_int)]
+            
+        # 根据匹配类型和用户角色生成对应的卡片
+        cards = [cls.generate_card(match_type=match_type, user_role=user_role) for _ in range(count_int)]
         return cls.wrap_response({
             "total": len(cards),
             "list": cards,
@@ -751,7 +910,7 @@ class TestDataGenerator:
                     return cls.generate_error_response(422, "缺少必要参数")
                     
                 count = params.get("pageSize", 10)
-                return cls.generate_match_cards_response(count)
+                return cls.generate_match_cards_response(count, match_type=match_type, user_role=user_role)
             elif api_path == "/api/v1/match/action" and method == "POST":
                 action = params.get("action", "like")
                 return cls.generate_match_action_response(action)

@@ -1,10 +1,16 @@
 const { API_CONFIG, STORAGE_KEYS } = require('./config');
+const { getCurrentEnvConfig } = require('./env');
 
 class ApiClient {
   constructor() {
-    this.baseURL = API_CONFIG.baseURL;
     this.timeout = API_CONFIG.timeout;
     this.retryCount = API_CONFIG.retryCount;
+  }
+  
+  // 获取当前baseURL
+  getBaseURL() {
+    const envConfig = getCurrentEnvConfig();
+    return envConfig.baseURL;
   }
 
   // 获取token
@@ -20,9 +26,18 @@ class ApiClient {
 
   // 清除token
   clearToken() {
-    wx.removeStorageSync(STORAGE_KEYS.TOKEN);
-    wx.removeStorageSync(STORAGE_KEYS.EXPIRES_IN);
-    wx.removeStorageSync(STORAGE_KEYS.USER_INFO);
+    console.log('清除token前检查:', {STORAGE_KEYS: STORAGE_KEYS});
+    if (!STORAGE_KEYS) {
+      console.error('STORAGE_KEYS未定义');
+    } else {
+      wx.removeStorageSync(STORAGE_KEYS.TOKEN);
+      wx.removeStorageSync(STORAGE_KEYS.EXPIRES_IN);
+      if (STORAGE_KEYS.USER_INFO) {
+        wx.removeStorageSync(STORAGE_KEYS.USER_INFO);
+      } else {
+        console.error('STORAGE_KEYS.USER_INFO未定义');
+      }
+    }
   }
 
   // 检查token是否有效
@@ -46,8 +61,11 @@ class ApiClient {
       };
     }
     
+    // 获取当前环境配置
+    const envConfig = getCurrentEnvConfig();
+    
     // 构建完整URL
-    const fullUrl = this.baseURL + url;
+    const fullUrl = this.getBaseURL() + url;
     
     // 构建请求头
     const requestHeaders = {
@@ -63,6 +81,14 @@ class ApiClient {
       }
     }
 
+    // 记录请求信息
+    console.log('API请求:', {
+      url: fullUrl,
+      method,
+      env: envConfig.envName,
+      baseURL: this.getBaseURL()
+    });
+
     try {
       const response = await new Promise((resolve, reject) => {
         wx.request({
@@ -72,6 +98,12 @@ class ApiClient {
           header: requestHeaders,
           timeout: this.timeout,
           success: (res) => {
+            console.log('API响应:', {
+              url: fullUrl,
+              statusCode: res.statusCode,
+              data: res.data
+            });
+            
             if (res.statusCode >= 200 && res.statusCode < 300) {
               resolve(res.data);
             } else {
@@ -79,6 +111,11 @@ class ApiClient {
             }
           },
           fail: (error) => {
+            console.error('API请求失败:', {
+              url: fullUrl,
+              error: error.errMsg,
+              env: envConfig.envName
+            });
             reject(new Error(`网络错误: ${error.errMsg}`));
           }
         });
@@ -99,7 +136,13 @@ class ApiClient {
         throw new Error(response.message || '请求失败');
       }
 
-      return response.data;
+      // 返回响应数据，兼容不同的数据结构
+      return {
+        code: response.code || 0,
+        message: response.message || 'success',
+        data: response.data || response,
+        success: response.code === 0
+      };
     } catch (error) {
       console.error('API请求失败:', error);
       throw error;

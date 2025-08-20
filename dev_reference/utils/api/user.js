@@ -1,4 +1,5 @@
 const ApiClient = require('./client');
+const { STORAGE_KEYS } = require('./config');
 
 class UserAPI extends ApiClient {
   // 获取用户信息
@@ -15,7 +16,14 @@ class UserAPI extends ApiClient {
         matchType: 'housing',
         userRole: 'seeker'
       };
-      wx.setStorageSync(this.STORAGE_KEYS.USER_INFO, mockUserInfo);
+      console.log('测试模式保存用户信息前检查:', {STORAGE_KEYS: STORAGE_KEYS, mockUserInfo: mockUserInfo});
+      if (!STORAGE_KEYS) {
+        console.error('STORAGE_KEYS未定义');
+      } else if (!STORAGE_KEYS.USER_INFO) {
+        console.error('STORAGE_KEYS.USER_INFO未定义');
+      } else {
+        wx.setStorageSync(STORAGE_KEYS.USER_INFO, mockUserInfo);
+      }
       return mockUserInfo;
     }
     
@@ -24,11 +32,21 @@ class UserAPI extends ApiClient {
         url: '/user/info',
         method: 'GET'
       });
-      
+
+      const userData = data.data.data;
       // 更新本地存储
-      wx.setStorageSync(this.STORAGE_KEYS.USER_INFO, data);
+      console.log('API返回后保存用户信息前检查:', {STORAGE_KEYS: STORAGE_KEYS, data: userData});
+      if (!STORAGE_KEYS) {
+        console.error('STORAGE_KEYS未定义');
+      } else if (!STORAGE_KEYS.USER_INFO) {
+        console.error('STORAGE_KEYS.USER_INFO未定义');
+      } else if (!userData) {
+        console.error('userData未定义');
+      } else {
+        wx.setStorageSync(STORAGE_KEYS.USER_INFO, userData);
+      }
       
-      return data;
+      return userData;
     } catch (error) {
       console.error('获取用户信息失败:', error);
       throw error;

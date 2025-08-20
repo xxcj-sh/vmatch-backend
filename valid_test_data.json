@@ -1,0 +1,500 @@
+{
+  "metadata": {
+    "generated_at": "2024-01-01 00:00:00",
+    "description": "测试数据，确保房东ID与测试用户关联",
+    "version": "1.0"
+  },
+  "users": [
+    {
+      "id": "user_001",
+      "nickName": "测试用户",
+      "avatarUrl": "https://picsum.photos/200/200?random=test1",
+      "gender": 1,
+      "age": 25,
+      "occupation": "软件工程师",
+      "location": "北京",
+      "bio": "这是一个测试账号",
+      "education": "本科",
+      "interests": [
+        "旅行",
+        "摄影",
+        "音乐"
+      ],
+      "joinDate": 1753118534,
+      "phone": "13800138000",
+      "email": "test@example.com",
+      "matchType": "dating",
+      "userRole": "seeker",
+      "preferences": {
+        "ageRange": [
+          20,
+          30
+        ],
+        "distance": 10
+      }
+    },
+    {
+      "id": "user_002",
+      "nickName": "胡秀英",
+      "avatarUrl": "https://picsum.photos/200/200?random=avatar54",
+      "gender": 1,
+      "age": 45,
+      "occupation": "律师",
+      "location": "成都",
+      "bio": "健身爱好者，追求健康生活方式。",
+      "education": "高中",
+      "interests": [
+        "篮球",
+        "游泳",
+        "收藏"
+      ],
+      "joinDate": 1735147334,
+      "phone": "17082143390",
+      "email": "EaNeFvjK@example.com",
+      "matchType": "friendship",
+      "userRole": "seeker",
+      "preferences": {
+        "ageRange": [
+          40,
+          50
+        ],
+        "distance": 20
+      }
+    },
+    {
+      "id": "user_003",
+      "nickName": "杨小花",
+      "avatarUrl": "https://picsum.photos/200/200?random=avatar78",
+      "gender": 2,
+      "age": 31,
+      "occupation": "自由职业者",
+      "location": "天津",
+      "bio": "热爱音乐和电影，闲暇时喜欢看书。",
+      "education": "大专",
+      "interests": [
+        "足球",
+        "音乐",
+        "舞蹈",
+        "电影",
+        "书法"
+      ],
+      "joinDate": 1746552134,
+      "phone": "15541529608",
+      "email": "vQro3EDZ@example.com",
+      "matchType": "business",
+      "userRole": "provider",
+      "preferences": {
+        "ageRange": [
+          26,
+          36
+        ],
+        "distance": 9
+      }
+    },
+    {
+      "id": "user_004",
+      "nickName": "周强",
+      "avatarUrl": "https://picsum.photos/200/200?random=avatar17",
+      "gender": 1,
+      "age": 32,
+      "occupation": "设计师",
+      "location": "重庆",
+      "bio": "美食达人，喜欢尝试各种美食和烹饪。",
+      "education": "博士",
+      "interests": [
+        "篮球",
+        "阅读",
+        "游泳",
+        "收藏"
+      ],
+      "joinDate": 1738430534,
+      "phone": "17800885250",
+      "email": "VJVQ7YLB@example.com",
+      "matchType": "dating",
+      "userRole": "seeker",
+      "preferences": {
+        "ageRange": [
+          27,
+          37
+        ],
+        "distance": 26
+      }
+    },
+    {
+      "id": "user_005",
+      "nickName": "马小芳",
+      "avatarUrl": "https://picsum.photos/200/200?random=avatar60",
+      "gender": 2,
+      "age": 40,
+      "occupation": "咨询顾问",
+      "location": "苏州",
+      "bio": "喜欢交友和社交，结交各行各业的朋友。",
+      "education": "高中",
+      "interests": [
+        "阅读",
+        "编程"
+      ],
+      "joinDate": 1747329734,
+      "phone": "17689206281",
+      "email": "sl0O6KCY@example.com",
+      "matchType": "dating",
+      "userRole": "seeker",
+      "preferences": {
+        "ageRange": [
+          35,
+          45
+        ],
+        "distance": 14
+      }
+    }
+  ],
+  "housing_cards": [
+    {
+      "id": "housing_card_001",
+      "name": "朱涛",
+      "avatar": "https://picsum.photos/200/200?random=avatar84",
+      "gender": 1,
+      "age": 45,
+      "occupation": "财务",
+      "location": "深圳",
+      "distance": "1.0km",
+      "bio": "对科技和创新充满热情，关注最新科技动态。",
+      "education": "高中",
+      "interests": [
+        "阅读",
+        "爬山",
+        "收藏"
+      ],
+      "matchType": "housing",
+      "userRole": "seeker",
+      "houseInfo": {
+        "id": "house_a55634c7-157c-4a8c-a77b-f98c357d4442",
+        "title": "温馨一居室",
+        "images": [
+          "https://picsum.photos/400/300?random=image8",
+          "https://picsum.photos/400/300?random=image73",
+          "https://picsum.photos/400/300?random=image21"
+        ],
+        "price": 4515,
+        "area": 113,
+        "orientation": "南向",
+        "floor": "4/22",
+        "hasElevator": true,
+        "decoration": "中式风格",
+        "community": "绿城花园",
+        "location": "海淀区",
+        "deposit": "押一付二",
+        "features": [
+          "近公园",
+          "精装修",
+          "业主直租"
+        ],
+        "videoUrl": "https://www.w3schools.com/html/movie.mp4"
+      },
+      "landlordInfo": {
+        "id": "user_001",
+        "name": "黄伟",
+        "avatar": "https://picsum.photos/200/200?random=avatar79",
+        "occupation": "自由职业者",
+        "verified": false,
+        "responseRate": "99%",
+        "joinDate": 1686763334,
+        "bio": "独立UI设计师，热爱艺术与设计，注重生活品质，希望与有趣的租客共享空间。"
+      }
+    },
+    {
+      "id": "housing_card_002",
+      "name": "王娜",
+      "avatar": "https://picsum.photos/200/200?random=avatar92",
+      "gender": 1,
+      "age": 44,
+      "occupation": "人力资源",
+      "location": "广州",
+      "distance": "1.9km",
+      "bio": "热爱生活，享受当下的每一刻。",
+      "education": "高中",
+      "interests": [
+        "书法",
+        "游泳",
+        "摄影",
+        "旅行",
+        "足球"
+      ],
+      "matchType": "housing",
+      "userRole": "seeker",
+      "houseInfo": {
+        "id": "house_19aa8bf3-1e63-4d5b-85a0-e5bedfb95cce",
+        "title": "现代两居室",
+        "images": [
+          "https://picsum.photos/400/300?random=image23",
+          "https://picsum.photos/400/300?random=image56",
+          "https://picsum.photos/400/300?random=image90",
+          "https://picsum.photos/400/300?random=image6",
+          "https://picsum.photos/400/300?random=image31",
+          "https://picsum.photos/400/300?random=image52"
+        ],
+        "price": 5397,
+        "area": 69,
+        "orientation": "东南向",
+        "floor": "14/26",
+        "hasElevator": false,
+        "decoration": "现代简约",
+        "community": "保利香槟国际",
+        "location": "东城区",
+        "deposit": "押一付三",
+        "features": [
+          "loft设计",
+          "高层景观",
+          "智能家居"
+        ],
+        "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+      },
+      "landlordInfo": {
+        "id": "user_002",
+        "name": "何丽娟",
+        "avatar": "https://picsum.photos/200/200?random=avatar65",
+        "occupation": "投资人",
+        "verified": false,
+        "responseRate": "96%",
+        "joinDate": 1687195334,
+        "bio": "资深产品经理，热爱生活的房东，希望找到一位爱干净的租客，一起维护温馨的小家。"
+      }
+    },
+    {
+      "id": "housing_card_003",
+      "name": "周霞",
+      "avatar": "https://picsum.photos/200/200?random=avatar48",
+      "gender": 1,
+      "age": 45,
+      "occupation": "设计师",
+      "location": "青岛",
+      "distance": "4.4km",
+      "bio": "对科技和创新充满热情，关注最新科技动态。",
+      "education": "本科",
+      "interests": [
+        "健身",
+        "篮球",
+        "电影"
+      ],
+      "matchType": "housing",
+      "userRole": "seeker",
+      "houseInfo": {
+        "id": "house_51591d10-4ed8-47be-9abd-75a3670bede2",
+        "title": "豪华公寓",
+        "images": [
+          "https://picsum.photos/400/300?random=image59",
+          "https://picsum.photos/400/300?random=image55",
+          "https://picsum.photos/400/300?random=image9",
+          "https://picsum.photos/400/300?random=image92",
+          "https://picsum.photos/400/300?random=image41",
+          "https://picsum.photos/400/300?random=image23"
+        ],
+        "price": 3175,
+        "area": 40,
+        "orientation": "东南向",
+        "floor": "11/15",
+        "hasElevator": false,
+        "decoration": "北欧风格",
+        "community": "阳光小区",
+        "location": "石景山区",
+        "deposit": "押二付一",
+        "features": [
+          "近地铁",
+          "拎包入住",
+          "家电齐全"
+        ],
+        "videoUrl": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+      },
+      "landlordInfo": {
+        "id": "user_003",
+        "name": "徐敏",
+        "avatar": "https://picsum.photos/200/200?random=avatar29",
+        "occupation": "互联网创业者",
+        "verified": false,
+        "responseRate": "90%",
+        "joinDate": 1727371334,
+        "bio": "资深产品经理，热爱生活的房东，希望找到一位爱干净的租客，一起维护温馨的小家。"
+      }
+    },
+    {
+      "id": "housing_card_004",
+      "name": "朱艳",
+      "avatar": "https://picsum.photos/200/200?random=avatar87",
+      "gender": 2,
+      "age": 38,
+      "occupation": "研究员",
+      "location": "南京",
+      "distance": "4.2km",
+      "bio": "美食达人，喜欢尝试各种美食和烹饪。",
+      "education": "大专",
+      "interests": [
+        "编程",
+        "阅读",
+        "园艺"
+      ],
+      "matchType": "housing",
+      "userRole": "seeker",
+      "houseInfo": {
+        "id": "house_972083f2-be99-4f03-b8be-6d7524e7b6b1",
+        "title": "温馨一居室",
+        "images": [
+          "https://picsum.photos/400/300?random=image76",
+          "https://picsum.photos/400/300?random=image27",
+          "https://picsum.photos/400/300?random=image44",
+          "https://picsum.photos/400/300?random=image43",
+          "https://picsum.photos/400/300?random=image15",
+          "https://picsum.photos/400/300?random=image42"
+        ],
+        "price": 4741,
+        "area": 91,
+        "orientation": "南向",
+        "floor": "8/24",
+        "hasElevator": true,
+        "decoration": "精装修",
+        "community": "保利香槟国际",
+        "location": "海淀区",
+        "deposit": "押一付一",
+        "features": [
+          "南向采光",
+          "地铁沿线",
+          "有车位"
+        ],
+        "videoUrl": "https://www.w3schools.com/html/movie.mp4"
+      },
+      "landlordInfo": {
+        "id": "user_004",
+        "name": "李静",
+        "avatar": "https://picsum.photos/200/200?random=avatar92",
+        "occupation": "UI设计师",
+        "verified": false,
+        "responseRate": "91%",
+        "joinDate": 1693502534,
+        "bio": "企业高管，多套房源，管理经验丰富，致力于为租客打造高品质的居住环境。"
+      }
+    },
+    {
+      "id": "housing_card_005",
+      "name": "杨静",
+      "avatar": "https://picsum.photos/200/200?random=avatar5",
+      "gender": 1,
+      "age": 24,
+      "occupation": "咨询顾问",
+      "location": "上海",
+      "distance": "3.6km",
+      "bio": "热爱户外活动，喜欢爬山和徒步。",
+      "education": "高中",
+      "interests": [
+        "音乐",
+        "爬山",
+        "舞蹈",
+        "绘画",
+        "瑜伽"
+      ],
+      "matchType": "housing",
+      "userRole": "seeker",
+      "houseInfo": {
+        "id": "house_928ba41a-cf8c-4458-a1bc-36f2503146b8",
+        "title": "loft复式公寓",
+        "images": [
+          "https://picsum.photos/400/300?random=image17",
+          "https://picsum.photos/400/300?random=image21",
+          "https://picsum.photos/400/300?random=image37"
+        ],
+        "price": 7675,
+        "area": 93,
+        "orientation": "北向",
+        "floor": "5/16",
+        "hasElevator": false,
+        "decoration": "现代简约",
+        "community": "华清嘉园",
+        "location": "海淀区",
+        "deposit": "押二付一",
+        "features": [
+          "南向采光",
+          "地铁沿线",
+          "有车位"
+        ],
+        "videoUrl": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+      },
+      "landlordInfo": {
+        "id": "user_005",
+        "name": "何磊",
+        "avatar": "https://picsum.photos/200/200?random=avatar58",
+        "occupation": "互联网创业者",
+        "verified": true,
+        "responseRate": "99%",
+        "joinDate": 1727976134,
+        "bio": "连续创业者，目前经营一家互联网公司。为人直爽，好沟通，希望为租客提供舒适的居住体验。"
+      }
+    }
+  ],
+  "matches": [
+    {
+      "id": "match_001",
+      "userId1": "test_seeker_001",
+      "userId2": "housing_card_001",
+      "reason": "你们的职业相似",
+      "createTime": 1754673734,
+      "isRead": false,
+      "type": "business",
+      "status": "passed"
+    },
+    {
+      "id": "match_002",
+      "userId1": "test_seeker_002",
+      "userId2": "housing_card_002",
+      "reason": "你们在同一个城市",
+      "createTime": 1753377734,
+      "isRead": true,
+      "type": "business",
+      "status": "passed"
+    },
+    {
+      "id": "match_003",
+      "userId1": "test_seeker_003",
+      "userId2": "housing_card_003",
+      "reason": "你们有共同的兴趣",
+      "createTime": 1754846534,
+      "isRead": false,
+      "type": "friendship",
+      "status": "matched"
+    },
+    {
+      "id": "match_004",
+      "userId1": "test_seeker_004",
+      "userId2": "housing_card_004",
+      "reason": "你们的职业相似",
+      "createTime": 1755278534,
+      "isRead": false,
+      "type": "friendship",
+      "status": "passed"
+    },
+    {
+      "id": "match_005",
+      "userId1": "test_seeker_005",
+      "userId2": "housing_card_005",
+      "reason": "你们的职业相似",
+      "createTime": 1753896134,
+      "isRead": false,
+      "type": "business",
+      "status": "liked"
+    }
+  ],
+  "api_test_info": {
+    "user_profile_endpoint": "/api/v1/user/profile",
+    "valid_user_ids": [
+      "user_001",
+      "user_002",
+      "user_003",
+      "user_004",
+      "user_005"
+    ],
+    "test_urls": [
+      "http://localhost:8000/api/v1/user/profile?userId=user_001",
+      "http://localhost:8000/api/v1/user/profile?userId=user_002",
+      "http://localhost:8000/api/v1/user/profile?userId=user_003",
+      "http://localhost:8000/api/v1/user/profile?userId=user_004",
+      "http://localhost:8000/api/v1/user/profile?userId=user_005"
+    ]
+  }
+}

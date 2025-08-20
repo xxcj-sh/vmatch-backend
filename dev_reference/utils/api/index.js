@@ -4,7 +4,12 @@ const UserAPI = require('./user');
 const MatchingAPI = require('./matching');
 const ChatAPI = require('./chat');
 const MembershipAPI = require('./membership');
-const { baseURL, API_TIMEOUT, API_RETRY_COUNT, STORAGE_KEYS } = require('./config');
+const { API_CONFIG, STORAGE_KEYS } = require('./config');
+
+// 保持向后兼容的配置导出
+const baseURL = API_CONFIG.baseURL;
+const API_TIMEOUT = API_CONFIG.timeout;
+const API_RETRY_COUNT = API_CONFIG.retryCount;
 
 // 创建各模块实例
 const authAPI = new AuthAPI();
@@ -21,9 +26,13 @@ module.exports = {
   API_RETRY_COUNT,
   STORAGE_KEYS,
   
+  // API配置对象
+  API_CONFIG,
+  
   // 认证相关方法
   wxLogin: authAPI.wxLogin.bind(authAPI),
   phoneLogin: authAPI.phoneLogin.bind(authAPI),
+  loginWithPhone: authAPI.loginWithPhone.bind(authAPI),
   sendVerificationCode: authAPI.sendVerificationCode.bind(authAPI),
   register: authAPI.register.bind(authAPI),
   logout: authAPI.logout.bind(authAPI),
