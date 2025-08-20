@@ -1,0 +1,4 @@
+.venv
+.codebuddy
+.pytest_cache
+.env.example
