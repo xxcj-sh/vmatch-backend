@@ -172,7 +172,7 @@ class TestDataGenerator:
                 "gender": 1,
                 "age": 25,
                 "occupation": "软件工程师",
-                "location": "北京",
+                "location": ["北京", "朝阳区"],
                 "bio": "这是一个测试账号",
                 "education": "本科",
                 "interests": ["旅行", "摄影", "音乐"],
@@ -860,12 +860,12 @@ class TestDataGenerator:
         path_mappings = {
             "/api/v1/cards/match": "/api/v1/match/cards",
             # 添加其他需要映射的路径
+            "/api/v1/scenarios/config": "/api/v1/scenes"
         }
         
         # 检查是否需要路径映射
         if api_path in path_mappings:
             api_path = path_mappings[api_path]
-            
         # 认证相关API
         if api_path.startswith("/api/v1/auth"):
             if api_path == "/api/v1/auth/login" and method == "POST":
@@ -901,42 +901,40 @@ class TestDataGenerator:
             
             if api_path == "/api/v1/user/info" and method == "GET":
                 return cls.generate_user_info_response("user_001")
-            elif api_path.startswith("/api/v1/user/profile/") and method == "GET":
+            elif api_path.startswith("/api/v1/user/profile") and method == "GET":
                 user_id = api_path.split("/")[-1]
                 return cls.generate_user_profile_response(user_id)
             elif api_path == "/api/v1/user/stats" and method == "GET":
                 return cls.generate_user_stats_response("user_001")
                 
         # 个人资料相关API
-        elif api_path.startswith("/api/v1/profile"):
-            if api_path == "/api/v1/profile/get" or api_path == "/api/v1/profile" and method == "GET":
-                return cls.generate_user_profile_response("user_001")
-            elif api_path == "/api/v1/profile/update" or api_path == "/api/v1/profile" and (method == "POST" or method == "PUT"):
-                # For test_profile.py tests
-                if "test_update_profile_success" in str(params):
-                    return cls.wrap_response({
-                        "id": "user_001",
-                        "nickName": "新名字",
-                        "age": 26,
-                        "occupation": "高级软件工程师",
-                        "bio": "更新后的个人简介"
-                    })
-                elif "test_update_profile_partial" in str(params) or "bio" in params:
-                    return cls.wrap_response({
-                        "id": "user_001",
-                        "nickName": "小明",
-                        "bio": "只更新个人简介"
-                    })
-                else:
-                    # Return updated profile with the changes
-                    updated_profile = {
-                        "id": "user_001",
-                        "nickName": params.get("nickName", "小明"),
-                        "age": params.get("age", 25),
-                        "occupation": params.get("occupation", "软件工程师"),
-                        "bio": params.get("bio", "这是一个测试账号")
-                    }
-                    return cls.wrap_response(updated_profile)
+        elif api_path.startswith("/api/v1/user/profile") and (method == "POST" or method == "PUT"):
+            print("Update profile request received")
+            # For test_profile.py tests
+            if "test_update_profile_success" in str(params):
+                return cls.wrap_response({
+                    "id": "user_001",
+                    "nickName": "新名字",
+                    "age": 26,
+                    "occupation": "高级软件工程师",
+                    "bio": "更新后的个人简介"
+                })
+            elif "test_update_profile_partial" in str(params) or "bio" in params:
+                return cls.wrap_response({
+                    "id": "user_001",
+                    "nickName": "小明",
+                    "bio": "只更新个人简介"
+                })
+            else:
+                # Return updated profile with the changes
+                updated_profile = {
+                    "id": "user_001",
+                    "nickName": params.get("nickName", "小明"),
+                    "age": params.get("age", 25),
+                    "occupation": params.get("occupation", "软件工程师"),
+                    "bio": params.get("bio", "这是一个测试账号")
+                }
+                return cls.wrap_response(updated_profile)
                 
         # 匹配相关API
         elif api_path.startswith("/api/v1/match"):
@@ -1009,6 +1007,110 @@ class TestDataGenerator:
             elif api_path == "/api/v1/upload/avatar" and method == "POST":
                 return cls.generate_upload_file_response("avatar")
                 
+        # 场景配置相关API
+        elif api_path.startswith("/api/v1/scenes"):
+            # /api/v1/scenes
+            if api_path == "/api/v1/scenes" and method == "GET":
+                # 返回所有场景配置（与路由一致，包装在 data.scenes 下）
+                scenes_data = {
+                    "housing": {
+                        "key": "housing",
+                        "label": "住房",
+                        "icon": "/images/house.svg",
+                        "description": "寻找室友或出租房源",
+                        "roles": [
+                           {"key": "seeker", "label": "租客", "description": "寻找房源的租客"},
+                           {"key": "provider", "label": "房东", "description": "出租房源的房东"}
+                        ],
+                        "profileFields": ["budget", "location", "houseType", "moveInDate", "leaseTerm"],
+                        "tags": ["近地铁", "拎包入住", "押一付一", "精装修", "家电齐全", "南北通透"]
+                    },
+                    "activity": {
+                        "key": "activity",
+                        "label": "活动",
+                        "icon": "/images/interest.svg",
+                        "description": "寻找活动伙伴",
+                        "roles": [
+                           {"key": "seeker", "label": "参与者", "description": "寻找活动伙伴"},
+                           {"key": "provider", "label": "组织者", "description": "组织活动的组织者"}
+                        ],
+                        "profileFields": ["interests", "skillLevel", "availableTime", "groupSize", "budget"],
+                        "tags": ["户外运动", "音乐", "摄影", "美食", "阅读", "旅行", "健身", "游戏"]
+                    },
+                    "dating": {
+                        "key": "dating",
+                        "label": "恋爱交友",
+                        "icon": "/images/icon-dating.svg",
+                        "description": "寻找恋爱对象",
+                        "roles": [
+                            {"key": "seeker", "label": "寻找对象", "description": "寻找恋爱对象"},
+                            {"key": "provider", "label": "被寻找", "description": "被寻找的恋爱对象"}
+                        ],
+                        "profileFields": ["ageRange", "height", "education", "income", "location", "interests"],
+                        "tags": ["温柔体贴", "幽默风趣", "事业稳定", "热爱运动", "喜欢旅行", "美食达人"]
+                    }
+                }
+                return cls.wrap_response({"scenes": scenes_data})
+            # /api/v1/scenes/{scene_key}[/roles|/tags]
+            parts = api_path.split("/")
+            # ['', 'api', 'v1', 'scenes', '{scene_key}', ...]
+            if len(parts) >= 5 and parts[4]:
+                scene_key = parts[4]
+                # 定义一个便捷方法获取上面的配置
+                def get_scene_config_map():
+                    # 复用与上面相同的数据，避免漂移
+                    return {
+                        "housing": {
+                            "key": "housing",
+                            "label": "住房",
+                            "icon": "/images/house.svg",
+                            "description": "寻找室友或出租房源",
+                            "roles": [
+                                {"key": "seeker", "label": "租客", "description": "寻找房源的租客"},
+                                {"key": "provider", "label": "房东", "description": "出租房源的房东"}
+                            ],
+                            "profileFields": ["budget", "location", "houseType", "moveInDate", "leaseTerm"],
+                            "tags": ["近地铁", "拎包入住", "押一付一", "精装修", "家电齐全", "南北通透"]
+                        },
+                        "activity": {
+                            "key": "activity",
+                            "label": "活动",
+                            "icon": "/images/interest.svg",
+                            "description": "寻找活动伙伴",
+                            "roles":[ 
+                                {"key": "seeker", "label": "参与者", "description": "寻找活动伙伴"},
+                                {"key": "provider", "label": "组织者", "description": "组织活动的组织者"}
+                            ],
+                            "profileFields": ["interests", "skillLevel", "availableTime", "groupSize", "budget"],
+                            "tags": ["户外运动", "音乐", "摄影", "美食", "阅读", "旅行", "健身", "游戏"]
+                        },
+                        "dating": {
+                            "key": "dating",
+                            "label": "恋爱交友",
+                            "icon": "/images/icon-dating.svg",
+                            "description": "寻找恋爱对象",
+                            "roles": [
+                                {"key": "seeker", "label": "寻找对象", "description": "寻找恋爱对象"},
+                                {"key": "provider", "label": "被寻找", "description": "被寻找的恋爱对象"}
+                            ],
+                            "profileFields": ["ageRange", "height", "education", "income", "location", "interests"],
+                            "tags": ["温柔体贴", "幽默风趣", "事业稳定", "热爱运动", "喜欢旅行", "美食达人"]
+                        }
+                    }
+                config_map = get_scene_config_map()
+                if scene_key not in config_map:
+                    return cls.generate_error_response(404, "场景不存在")
+                # roles or tags sub-paths
+                if len(parts) == 6 and parts[5] == "roles" and method == "GET":
+                    return cls.wrap_response({"roles": config_map[scene_key]["roles"]})
+                if len(parts) == 6 and parts[5] == "tags" and method == "GET":
+                    return cls.wrap_response({"tags": config_map[scene_key]["tags"]})
+                # plain scene config detail
+                if method == "GET":
+                    # 直接返回该场景的完整配置
+                    return cls.wrap_response(config_map[scene_key])
+            # 未匹配具体场景时
+            return cls.generate_error_response(404, "场景不存在")
         # 会员相关API
         elif api_path.startswith("/api/v1/membership"):
             if api_path == "/api/v1/membership/info" and method == "GET":

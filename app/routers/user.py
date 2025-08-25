@@ -7,6 +7,44 @@ from fastapi import Header
 
 router = APIRouter()
 
+@router.get("/me/stats", response_model=BaseResponse)
+async def get_user_stats(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
+    """获取用户统计数据"""
+    # 计算匹配数
+    match_count = 0
+    for match in mock_data_service.matches.values():
+        if match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]:
+            match_count += 1
+    
+    # 计算消息数
+    message_count = 0
+    for match_id, messages in mock_data_service.messages.items():
+        match = mock_data_service.matches.get(match_id)
+        if match and (match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]):
+            message_count += len(messages)
+    
+    # 假设收藏数
+    favorite_count = 0
+    
+    return BaseResponse(
+        code=0,
+        message="success",
+        data={
+            "matchCount": match_count,
+            "messageCount": message_count,
+            "favoriteCount": favorite_count
+        }
+    )
+
+@router.get("/me", response_model=BaseResponse)
+async def get_current_user_info(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
+    """获取当前用户信息"""
+    return BaseResponse(
+        code=0,
+        message="success",
+        data=current_user
+    )
+
 @router.get("/info", response_model=BaseResponse)
 async def get_user_info(authorization: Optional[str] = Header(None)):
     """获取用户信息"""
@@ -59,7 +97,7 @@ async def get_user_profile(
         "avatar": user.get("avatarUrl", ""),
         "age": user.get("age"),
         "gender": "男" if user.get("gender") == 1 else "女" if user.get("gender") == 2 else "未知",
-        "location": user.get("location", ""),
+        "location": user.get("location", []),
         "occupation": user.get("occupation", ""),
         "education": user.get("education", ""),
         "height": user.get("height"),
@@ -75,82 +113,4 @@ async def get_user_profile(
         code=0,
         message="success",
         data=profile_data
-    )
-
-@router.get("/profile", response_model=BaseResponse)
-async def get_full_profile(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
-    """获取用户完整资料"""
-    # 构建完整资料响应
-    profile_data = {
-        "id": current_user["id"],
-        "nickname": current_user.get("nickName", ""),
-        "avatar": current_user.get("avatarUrl", ""),
-        "phone": current_user.get("phone", ""),
-        "email": current_user.get("email", ""),
-        "currentRole": current_user.get("userRole", ""),
-        "roles": [
-            {"type": current_user.get("matchType", ""), "name": current_user.get("userRole", "")}
-        ],
-        "bio": current_user.get("bio", ""),
-        "interests": current_user.get("interests", []),
-        "location": current_user.get("location", ""),
-        "joinDate": current_user.get("joinDate", ""),
-        "verified": True  # 测试模式下默认已验证
-    }
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data=profile_data
-    )
-
-@router.put("/profile", response_model=BaseResponse)
-async def update_user_profile(
-    request: Dict[str, Any],
-    current_user: Dict[str, Any] = Depends(auth_service.get_current_user)
-):
-    """更新用户资料"""
-    profile_data = request.get("profileData", {})
-    updated_user = mock_data_service.update_profile(current_user["id"], profile_data)
-    
-    if not updated_user:
-        return BaseResponse(
-            code=1001,
-            message="用户不存在",
-            data=None
-        )
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data={"success": True}
-    )
-
-@router.get("/stats", response_model=BaseResponse)
-async def get_user_stats(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
-    """获取用户统计数据"""
-    # 计算匹配数
-    match_count = 0
-    for match in mock_data_service.matches.values():
-        if match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]:
-            match_count += 1
-    
-    # 计算消息数
-    message_count = 0
-    for match_id, messages in mock_data_service.messages.items():
-        match = mock_data_service.matches.get(match_id)
-        if match and (match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]):
-            message_count += len(messages)
-    
-    # 假设收藏数
-    favorite_count = 0
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data={
-            "matchCount": match_count,
-            "messageCount": message_count,
-            "favoriteCount": favorite_count
-        }
     )

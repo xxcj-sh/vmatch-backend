@@ -6,3 +6,4 @@ from . import profile
 from . import file
 from . import membership
 from . import properties
+from . import scenes

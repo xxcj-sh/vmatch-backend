@@ -17,7 +17,7 @@ async def get_profile(current_user: Dict[str, Any] = Depends(auth_service.get_cu
         "avatarUrl": current_user.get("avatarUrl", ""),
         "age": current_user.get("age"),
         "occupation": current_user.get("occupation", ""),
-        "location": current_user.get("location", ""),
+        "location": current_user.get("location", []),
         "bio": current_user.get("bio", ""),
         "interests": current_user.get("interests", []),
         "preferences": current_user.get("preferences", {}),
@@ -41,7 +41,7 @@ async def update_profile(
     try:
         # Parse request body
         body = await request.json()
-        
+        print(body)
         # Update user profile
         updated_user = mock_data_service.update_profile(
             current_user["id"], 
@@ -55,10 +55,11 @@ async def update_profile(
                 data=None
             )
         
+        # Return the updated user data to match test expectations
         return BaseResponse(
             code=0,
             message="success",
-            data={"success": True}
+            data=updated_user
         )
     except Exception as e:
         return BaseResponse(

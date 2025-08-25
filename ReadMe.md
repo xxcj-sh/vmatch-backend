@@ -64,8 +64,8 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - `POST /api/v1/chat/read` - 标记消息已读
 
 ### 5. 个人资料接口
-- `GET /api/v1/profile/get` - 获取个人资料
-- `POST /api/v1/profile/update` - 更新个人资料
+- `GET /api/v1/user/profile/get` - 获取个人资料
+- `POST /api/v1/user/profile/update` - 更新个人资料
 
 ### 6. 文件上传接口
 - `POST /api/v1/file/upload` - 上传图片

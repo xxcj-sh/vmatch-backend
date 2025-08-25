@@ -38,7 +38,7 @@ class User(BaseModel):
     gender: int = Field(..., description="性别")
     age: Optional[int] = Field(None, description="年龄")
     occupation: Optional[str] = Field(None, description="职业")
-    location: Optional[str] = Field(None, description="位置")
+    location: Optional[List[str]] = Field(None, description="位置，按[省, 市, 区/县]顺序存储")
     bio: Optional[str] = Field(None, description="个人简介")
     match_type: Optional[Literal["housing", "activity", "dating"]] = Field(None, description="匹配类型")
     user_role: Optional[Literal["seeker", "provider"]] = Field(None, description="用户角色")
@@ -121,7 +121,7 @@ class Profile(BaseModel):
     avatar_url: str = Field(..., description="头像URL")
     age: Optional[int] = Field(None, description="年龄")
     occupation: Optional[str] = Field(None, description="职业")
-    location: Optional[str] = Field(None, description="位置")
+    location: Optional[List[str]] = Field(None, description="位置，按[省, 市, 区/县]顺序存储")
     bio: Optional[str] = Field(None, description="个人简介")
     interests: Optional[List[str]] = Field(None, description="兴趣爱好")
     preferences: Optional[Dict[str, Any]] = Field(None, description="偏好设置")
@@ -132,7 +132,7 @@ class ProfileUpdateRequest(BaseModel):
     avatar_url: Optional[str] = Field(None, description="头像URL")
     age: Optional[int] = Field(None, description="年龄")
     occupation: Optional[str] = Field(None, description="职业")
-    location: Optional[str] = Field(None, description="位置")
+    location: Optional[List[str]] = Field(None, description="位置，按[省, 市, 区/县]顺序存储")
     bio: Optional[str] = Field(None, description="个人简介")
     interests: Optional[List[str]] = Field(None, description="兴趣爱好")
     preferences: Optional[Dict[str, Any]] = Field(None, description="偏好设置")
@@ -141,3 +141,21 @@ class ProfileUpdateRequest(BaseModel):
 # 文件上传响应
 class FileUploadResponse(BaseModel):
     url: str = Field(..., description="文件URL")
+
+# 场景配置相关模型
+class SceneRole(BaseModel):
+    key: str = Field(..., description="角色标识")
+    label: str = Field(..., description="角色名称")
+    description: str = Field(..., description="角色描述")
+
+class SceneConfig(BaseModel):
+    key: str = Field(..., description="场景标识")
+    label: str = Field(..., description="场景名称")
+    icon: str = Field(..., description="图标路径")
+    description: str = Field(..., description="场景描述")
+    roles: Dict[str, SceneRole] = Field(..., description="角色配置")
+    profileFields: List[str] = Field(..., description="个人资料字段")
+    tags: List[str] = Field(..., description="标签列表")
+
+class SceneConfigResponse(BaseModel):
+    scenes: dict[str, SceneConfig] = Field(..., description="场景配置字典")

@@ -2,6 +2,8 @@ from typing import Dict, List, Any, Optional
 import uuid
 import time
 import random
+import json
+import os
 
 class MockDataService:
     """模拟数据服务"""
@@ -17,83 +19,130 @@ class MockDataService:
         # 初始化一些测试数据
         self._init_test_data()
     
+    def _load_fixed_housing_data(self):
+        """加载固定的房源测试数据"""
+        try:
+            # 获取项目根目录下的测试数据文件
+            current_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            json_file_path = os.path.join(current_dir, "fixed_housing_test_data.json")
+            
+            if os.path.exists(json_file_path):
+                with open(json_file_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load fixed housing data: {e}")
+        
+        return None
+
     def _init_test_data(self):
         """初始化测试数据"""
-        # 创建测试用户
-        test_user = self.create_user({
-            "id": "user_001",  # 固定ID用于测试
-            "nickName": "测试用户",
-            "avatarUrl": "https://picsum.photos/200/200?random=avatar1",
-            "gender": 1,
-            "age": 28,
-            "occupation": "软件工程师",
-            "location": "北京",
-            "bio": "喜欢编程和旅行",
-            "matchType": "dating",
-            "userRole": "seeker",
-            "interests": ["编程", "旅行", "音乐"],
-            "preferences": {
-                "ageRange": [25, 35],
-                "distance": 10
-            }
-        })
+        # 尝试加载固定的房源测试数据
+        fixed_data = self._load_fixed_housing_data()
         
-        # 创建另一个测试用户（用于测试获取用户资料）
-        self.create_user({
-            "id": "card_001",  # 固定ID用于测试
-            "nickName": "测试卡片用户",
-            "avatarUrl": "https://picsum.photos/200/200?random=avatar2",
-            "gender": 2,
-            "age": 26,
-            "occupation": "设计师",
-            "location": "上海",
-            "bio": "喜欢设计和摄影",
-            "matchType": "dating",
-            "userRole": "provider",
-            "interests": ["设计", "摄影", "旅行"],
-            "preferences": {
-                "ageRange": [25, 35],
-                "distance": 15
-            }
-        })
+        if fixed_data:
+            # 加载固定的测试用户
+            for user_data in fixed_data.get("testUsers", []):
+                self.create_user(user_data)
+            
+            # 加载固定的房源卡片
+            for card_data in fixed_data.get("housingCards", []):
+                # 确保包含 videoUrl
+                if "houseInfo" in card_data and "videoUrl" not in card_data["houseInfo"]:
+                    card_data["houseInfo"]["videoUrl"] = "https://cdn.pixabay.com/video/2024/02/03/199109-909564730_tiny.mp4"
+                self.cards[card_data["id"]] = card_data
+            
+            # 加载固定的匹配数据
+            for match_data in fixed_data.get("matches", []):
+                self.matches[match_data["id"]] = match_data
         
-        # 创建测试卡片
-        for i in range(1, 11):
-            card_id = f"card_00{i}"
-            self.create_card({
-                "id": card_id,
-                "name": f"测试卡片{i}",
-                "avatar": f"https://picsum.photos/200/200?random=card{i}",
-                "age": random.randint(25, 35),
-                "occupation": random.choice(["软件工程师", "设计师", "产品经理", "市场专员"]),
-                "distance": f"{random.randint(1, 15)}km",
-                "interests": random.sample(["编程", "旅行", "音乐", "电影", "阅读", "摄影", "健身"], 3),
+        # 创建默认测试用户（如果没有加载到固定数据）
+        if "user_001" not in self.users:
+            test_user = self.create_user({
+                "id": "user_001",
+                "nickName": "小明",
+                "avatarUrl": "https://picsum.photos/200/200?random=avatar1",
+                "gender": 1,
+                "age": 25,
+                "occupation": "软件工程师",
+                "location": ["北京市", "朝阳区"],
+                "bio": "喜欢编程和旅行",
                 "matchType": "dating",
-                "bio": f"这是测试卡片{i}的个人简介"
+                "userRole": "seeker",
+                "interests": ["编程", "旅行", "音乐"],
+                "preferences": {
+                    "ageRange": [25, 35],
+                    "distance": 10
+                },
+                "phone": "13800138001",
+                "email": "xiaoming@example.com",
+                "education": "本科",
+                "joinDate": int(time.time())
             })
         
-        # 创建测试匹配
-        match = {
-            "isMatch": True,
-            "matchId": "match_001"
-        }
+        # 创建另一个测试用户（用于测试获取用户资料）
+        if "card_001" not in self.users:
+            self.create_user({
+                "id": "card_001",
+                "nickName": "测试卡片用户",
+                "avatarUrl": "https://picsum.photos/200/200?random=avatar2",
+                "gender": 2,
+                "age": 26,
+                "occupation": "设计师",
+                "location": ["上海市", "上海市", "浦东新区"],
+                "bio": "喜欢设计和摄影",
+                "matchType": "dating",
+                "userRole": "provider",
+                "interests": ["设计", "摄影", "旅行"],
+                "preferences": {
+                    "ageRange": [25, 35],
+                    "distance": 15
+                }
+            })
         
-        # 创建匹配记录
-        self.matches["match_001"] = {
-            "id": "match_001",
-            "userId1": "user_001",
-            "userId2": "card_001",
-            "reason": "你们有共同的兴趣",
-            "createTime": int(time.time()),
-            "isRead": False,
-            "type": "dating",
-            "status": "matched"
-        }
+        # 如果没有房源卡片，创建一些默认的
+        housing_cards = [card for card in self.cards.values() if card.get("matchType") == "housing"]
+        if not housing_cards:
+            for i in range(1, 4):
+                card_id = f"card_house_default_{i:03d}"
+                self.create_card({
+                    "id": card_id,
+                    "name": f"精装房源{i}",
+                    "avatar": f"https://picsum.photos/200/200?random=house{i}",
+                    "age": None,
+                    "occupation": "房源",
+                    "distance": f"{random.randint(1, 15)}km",
+                    "interests": [],
+                    "matchType": "housing",
+                    "userRole": "seeker",
+                    "bio": f"这是测试房源{i}的详细描述",
+                    "houseInfo": {
+                        "price": 3000 + i * 500,
+                        "area": 60 + i * 10,
+                        "rooms": 2,
+                        "location": "北京市朝阳区",
+                        "features": ["近地铁", "精装修", "家电齐全"],
+                        "videoUrl": "https://cdn.pixabay.com/video/2024/02/03/199109-909564730_tiny.mp4"
+                    }
+                })
+        
+        # 创建默认匹配记录（如果没有）
+        if not self.matches:
+            self.matches["match_001"] = {
+                "id": "match_001",
+                "userId1": "user_001",
+                "userId2": "card_001",
+                "reason": "你们有共同的兴趣",
+                "createTime": int(time.time()),
+                "isRead": False,
+                "type": "dating",
+                "status": "matched"
+            }
         
         # 创建测试消息
-        self.messages["match_001"] = []
-        self.send_message("match_001", "user_001", "你好，很高兴认识你！", "text")
-        self.send_message("match_001", "card_001", "你好，我也很高兴认识你！", "text")
+        if "match_001" not in self.messages:
+            self.messages["match_001"] = []
+            self.send_message("match_001", "user_001", "你好，很高兴认识你！", "text")
+            self.send_message("match_001", "card_001", "你好，我也很高兴认识你！", "text")
     
     def create_user(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """创建用户"""
@@ -124,7 +173,7 @@ class MockDataService:
         """更新用户资料"""
         user = self.get_user_by_id(user_id)
         if not user:
-            return None
+            return None  # Return None to indicate user not found
         
         user.update(profile_data)
         return user
@@ -136,15 +185,36 @@ class MockDataService:
             "id": card_id,
             **card_data
         }
+        
+        # 为租客用户场景添加 videoUrl 字段
+        if card_data.get("matchType") == "housing" and card_data.get("userRole") == "seeker":
+            if "videoUrl" not in card:
+                card["videoUrl"] = random.choice([
+                    "https://cdn.pixabay.com/video/2024/02/03/199109-909564730_tiny.mp4",
+                    "https://cdn.pixabay.com/video/2023/04/08/157989-815894934_tiny.mp4",
+                    "https://cdn.pixabay.com/video/2023/09/30/183008-869941724_tiny.mp4",
+                    "https://cdn.pixabay.com/video/2025/03/21/266435_tiny.mp4",
+                    "https://cdn.pixabay.com/video/2021/08/30/86867-594991237_tiny.mp4",
+                    "https://cdn.pixabay.com/video/2025/06/13/285663_tiny.mp4"
+                ])
+        
         self.cards[card_id] = card
         return card
     
     def get_cards(self, match_type: str, user_role: str, page: int, page_size: int) -> Dict[str, Any]:
         """获取匹配卡片"""
-        filtered_cards = [
-            card for card in self.cards.values()
-            if card.get("matchType") == match_type
-        ]
+        # 对于房源匹配，seeker用户应该看到所有房源卡片（不管房源的userRole）
+        if match_type == "housing":
+            filtered_cards = [
+                card for card in self.cards.values()
+                if card.get("matchType") == match_type
+            ]
+        else:
+            # 对于其他类型的匹配，按原逻辑过滤
+            filtered_cards = [
+                card for card in self.cards.values()
+                if card.get("matchType") == match_type and card.get("userRole") == user_role
+            ]
         
         start = (page - 1) * page_size
         end = start + page_size
@@ -216,11 +286,11 @@ class MockDataService:
             "pageSize": page_size
         }
     
-    def get_match_by_id(self, match_id: str, user_id: str = None) -> Optional[Dict[str, Any]]:
+    def get_match_by_id(self, match_id: str, user_id: str = None) -> Dict[str, Any]:
         """根据ID获取匹配"""
         match = self.matches.get(match_id)
         if not match:
-            return None
+            return {}  # Return empty dict instead of None
         
         # 添加卡片信息
         if user_id:
