@@ -9,6 +9,7 @@ from app.config import settings
 from app.utils.test_data_generator import test_data_generator
 import json
 import time
+import os
 from datetime import datetime, timezone
 
 class RESTfulTestModeMiddleware(BaseHTTPMiddleware):
@@ -460,6 +461,27 @@ class RESTfulTestModeMiddleware(BaseHTTPMiddleware):
             # 更新资料
             updated_profile = current_user.copy()
             updated_profile.update(body)
+            
+            # 将更新后的数据保存到本地文件
+            try:
+                user_id = current_user["id"]
+                test_user_data_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "test_user_data.json")
+                
+                if os.path.exists(test_user_data_file):
+                    with open(test_user_data_file, 'r', encoding='utf-8') as f:
+                        user_data = json.load(f)
+                    
+                    # 更新用户数据
+                    if user_id in user_data:
+                        user_data[user_id].update(body)
+                        
+                        # 保存更新后的数据
+                        with open(test_user_data_file, 'w', encoding='utf-8') as f:
+                            json.dump(user_data, f, ensure_ascii=False, indent=2)
+                        
+                        print(f"Updated user data saved to {test_user_data_file}")
+            except Exception as e:
+                print(f"Warning: Could not save user data to file: {e}")
             
             return self.create_response(
                 data=updated_profile

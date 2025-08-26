@@ -33,6 +33,7 @@ async def get_profile(current_user: Dict[str, Any] = Depends(auth_service.get_cu
 @router.post("/update", response_model=BaseResponse)
 @router.put("", response_model=BaseResponse)
 @router.put("/", response_model=BaseResponse)
+@router.put("/me", response_model=BaseResponse)
 async def update_profile(
     request: Request,
     current_user: Dict[str, Any] = Depends(auth_service.get_current_user)

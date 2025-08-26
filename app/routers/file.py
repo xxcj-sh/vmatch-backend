@@ -64,3 +64,52 @@ async def upload_file(
             message=f"文件上传失败: {str(e)}",
             data=None
         )
+
+@router.delete("/delete", response_model=BaseResponse)
+async def delete_file(
+    file_url: str = Form(...),
+    current_user: Dict[str, Any] = Depends(auth_service.get_current_user)
+):
+    """删除文件接口"""
+    try:
+        # 在测试模式下，模拟文件删除
+        if settings.test_mode:
+            return BaseResponse(
+                code=0,
+                message="文件删除成功",
+                data=None
+            )
+        
+        # 从URL中提取文件名
+        if file_url.startswith("/uploads/"):
+            file_name = file_url.replace("/uploads/", "")
+            file_path = os.path.join(settings.upload_dir, file_name)
+            
+            # 检查文件是否存在
+            if not os.path.exists(file_path):
+                return BaseResponse(
+                    code=404,
+                    message="文件不存在",
+                    data=None
+                )
+            
+            # 删除文件
+            os.remove(file_path)
+            return BaseResponse(
+                code=0,
+                message="文件删除成功",
+                data=None
+            )
+        else:
+            return BaseResponse(
+                code=400,
+                message="无效的文件URL",
+                data=None
+            )
+            
+    except Exception as e:
+        return BaseResponse(
+            code=500,
+            message=f"文件删除失败: {str(e)}",
+            data=None
+        )

@@ -16,8 +16,14 @@ class MockDataService:
         self.messages: Dict[str, List[Dict[str, Any]]] = {}
         self.sms_codes: Dict[str, Dict[str, Any]] = {}
         
+        # 用户数据本地存储文件路径
+        self.user_data_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "test_user_data.json")
+        
         # 初始化一些测试数据
         self._init_test_data()
+        
+        # 尝试从本地文件加载用户数据
+        self._load_user_data_from_file()
     
     def _load_fixed_housing_data(self):
         """加载固定的房源测试数据"""
@@ -33,6 +39,28 @@ class MockDataService:
             print(f"Warning: Could not load fixed housing data: {e}")
         
         return None
+    
+    def _load_user_data_from_file(self):
+        """从本地文件加载用户数据"""
+        try:
+            if os.path.exists(self.user_data_file):
+                with open(self.user_data_file, 'r', encoding='utf-8') as f:
+                    user_data = json.load(f)
+                    # 更新内存中的用户数据
+                    for user_id, user in user_data.items():
+                        self.users[user_id] = user
+                    print(f"Loaded user data from {self.user_data_file}")
+        except Exception as e:
+            print(f"Warning: Could not load user data from file: {e}")
+    
+    def _save_user_data_to_file(self):
+        """将用户数据保存到本地文件"""
+        try:
+            with open(self.user_data_file, 'w', encoding='utf-8') as f:
+                json.dump(self.users, f, ensure_ascii=False, indent=2)
+                print(f"Saved user data to {self.user_data_file}")
+        except Exception as e:
+            print(f"Warning: Could not save user data to file: {e}")
 
     def _init_test_data(self):
         """初始化测试数据"""
@@ -169,13 +197,17 @@ class MockDataService:
         else:
             return self.users.get(token)
     
-    def update_profile(self, user_id: str, profile_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_profile(self, user_id: str, profile_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """更新用户资料"""
         user = self.get_user_by_id(user_id)
         if not user:
             return None  # Return None to indicate user not found
         
         user.update(profile_data)
+        
+        # 将更新后的用户数据保存到本地文件
+        self._save_user_data_to_file()
+        
         return user
     
     def create_card(self, card_data: Dict[str, Any]) -> Dict[str, Any]:

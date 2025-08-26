@@ -1,0 +1,54 @@
+{
+  "user_001": {
+    "id": "user_001",
+    "nickName": "Xiao Ming Updated",
+    "avatarUrl": "https://picsum.photos/200/200?random=avatar1",
+    "gender": 1,
+    "age": 18,
+    "occupation": "学生",
+    "location": "广东省 广州市 黄埔区",
+    "bio": "",
+    "matchType": "dating",
+    "userRole": "seeker",
+    "interests": [],
+    "preferences": {
+      "ageRange": [
+        25,
+        35
+      ],
+      "distance": 10
+    },
+    "phone": "13800138001",
+    "email": "xiaoming@example.com",
+    "education": "本科",
+    "joinDate": 1714147200
+  },
+  "card_001": {
+    "id": "card_001",
+    "nickName": "测试卡片用户",
+    "avatarUrl": "https://picsum.photos/200/200?random=avatar2",
+    "gender": 2,
+    "age": 26,
+    "occupation": "设计师",
+    "location": [
+      "上海市",
+      "上海市",
+      "浦东新区"
+    ],
+    "bio": "喜欢设计和摄影",
+    "matchType": "dating",
+    "userRole": "provider",
+    "interests": [
+      "设计",
+      "摄影",
+      "旅行"
+    ],
+    "preferences": {
+      "ageRange": [
+        25,
+        35
+      ],
+      "distance": 15
+    }
+  }
+}
