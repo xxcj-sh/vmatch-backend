@@ -1,116 +1,126 @@
-from fastapi import APIRouter, Depends, Query, Path, HTTPException
-from app.models.schemas import User, BaseResponse
-from app.services.auth import auth_service
-from app.services.mock_data import mock_data_service
-from typing import Dict, Any, Optional
-from fastapi import Header
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List, Dict, Any
+from pydantic import BaseModel
+from app.utils.db_config import get_db
+from app.services import db_service
+from app.services.data_adapter import data_service
+from app.dependencies import get_current_user
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    responses={404: {"description": "Not found"}},
+)
 
-@router.get("/me/stats", response_model=BaseResponse)
-async def get_user_stats(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
-    """获取用户统计数据"""
-    # 计算匹配数
-    match_count = 0
-    for match in mock_data_service.matches.values():
-        if match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]:
-            match_count += 1
-    
-    # 计算消息数
-    message_count = 0
-    for match_id, messages in mock_data_service.messages.items():
-        match = mock_data_service.matches.get(match_id)
-        if match and (match["userId1"] == current_user["id"] or match["userId2"] == current_user["id"]):
-            message_count += len(messages)
-    
-    # 假设收藏数
-    favorite_count = 0
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data={
-            "matchCount": match_count,
-            "messageCount": message_count,
-            "favoriteCount": favorite_count
-        }
-    )
+# 用户模型
+class UserBase(BaseModel):
+    username: str
+    email: str
 
-@router.get("/me", response_model=BaseResponse)
-async def get_current_user_info(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
+class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(BaseModel):
+    username: str = None
+    email: str = None
+    is_active: bool = None
+
+class ProfileUpdate(BaseModel):
+    nickName: str = None
+    avatarUrl: str = None
+    gender: int = None
+    age: int = None
+    occupation: str = None
+    location: list = None
+    bio: str = None
+    matchType: str = None
+    userRole: str = None
+    interests: list = None
+    preferences: dict = None
+    phone: str = None
+    education: str = None
+
+class User(UserBase):
+    id: str
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
+# 路由
+@router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = db_service.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # 在实际应用中，这里应该对密码进行哈希处理
+    hashed_password = user.password  # 简化示例，实际应使用哈希
+    
+    user_data = user.dict()
+    user_data.pop("password")
+    user_data["hashed_password"] = hashed_password
+    
+    return db_service.create_user(db=db, user_data=user_data)
+
+@router.get("/", response_model=List[User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = db_service.get_users(db, skip=skip, limit=limit)
+    return users
+
+@router.get("/me")
+def get_current_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
     """获取当前用户信息"""
-    return BaseResponse(
-        code=0,
-        message="success",
-        data=current_user
-    )
+    return current_user
 
-@router.get("/info", response_model=BaseResponse)
-async def get_user_info(authorization: Optional[str] = Header(None)):
-    """获取用户信息"""
-    # Check if authorization header is provided
-    if not authorization:
-        raise HTTPException(status_code=401, detail="未提供认证信息")
+@router.put("/me")
+def update_current_user(profile_data: ProfileUpdate, current_user: Dict[str, Any] = Depends(get_current_user)):
+    """更新当前用户信息"""
+    user_id = current_user.get("id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not authenticated")
     
-    # Check if authorization format is valid
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="无效的认证格式")
+    # 转换为字典，排除未设置的字段
+    update_dict = profile_data.dict(exclude_unset=True)
     
-    # Extract token
-    token = authorization.split(" ")[1]
-    
-    # Get user from token
-    user = auth_service.get_user_from_token(token)
-    
-    # Check if token is valid
-    if not user:
-        raise HTTPException(status_code=401, detail="无效的token")
-    
-    # For test_user_info_success test, ensure user_id is "user_001"
-    if token == "user_001":
-        user["id"] = "user_001"
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data=user
-    )
+    updated_user = data_service.update_profile(user_id, update_dict)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated_user
 
-@router.get("/profile/{userId}", response_model=BaseResponse)
-async def get_user_profile(
-    userId: str = Path(..., description="用户ID"),
-    current_user: Dict[str, Any] = Depends(auth_service.get_current_user)
-):
-    """获取他人用户资料"""
-    user = mock_data_service.get_user_by_id(userId)
-    if not user:
-        return BaseResponse(
-            code=1001,
-            message="用户不存在",
-            data=None
-        )
-    
-    # 构建用户资料响应
-    profile_data = {
-        "id": user["id"],
-        "nickname": user.get("nickName", ""),
-        "avatar": user.get("avatarUrl", ""),
-        "age": user.get("age"),
-        "gender": "男" if user.get("gender") == 1 else "女" if user.get("gender") == 2 else "未知",
-        "location": user.get("location", []),
-        "occupation": user.get("occupation", ""),
-        "education": user.get("education", ""),
-        "height": user.get("height"),
-        "bio": user.get("bio", ""),
-        "photos": [
-            {"url": user.get("avatarUrl", ""), "type": "avatar"}
-        ],
-        "interests": user.get("interests", []),
-        "role": user.get("userRole", "")
+@router.get("/me/stats")
+def get_current_user_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """获取用户统计信息"""
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "matchCount": 10,
+            "messageCount": 50,
+            "favoriteCount": 5
+        }
     }
-    
-    return BaseResponse(
-        code=0,
-        message="success",
-        data=profile_data
-    )
+
+@router.get("/{user_id}", response_model=User)
+def read_user(user_id: str, db: Session = Depends(get_db)):
+    db_user = db_service.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+@router.put("/{user_id}", response_model=User)
+def update_user(user_id: str, user: UserUpdate, db: Session = Depends(get_db)):
+    db_user = db_service.update_user(db, user_id=user_id, user_data=user.dict(exclude_unset=True))
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: str, db: Session = Depends(get_db)):
+    success = db_service.delete_user(db, user_id=user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"detail": "User deleted"}
+
+

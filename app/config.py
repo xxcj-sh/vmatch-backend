@@ -1,31 +1,35 @@
+import os
 from pydantic_settings import BaseSettings
-from typing import Optional
+from dotenv import load_dotenv
+
+# 加载.env文件
+load_dotenv()
 
 class Settings(BaseSettings):
+    """应用配置"""
+    # 环境设置
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    
+    # 数据库配置
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL", 
+        f"sqlite:///./vmatch_{ENVIRONMENT}.db"
+    )
+    
     # 应用配置
-    app_name: str = "WeMatch 微信小程序服务端"
-    debug: bool = True
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your_secret_key_here")
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # 安全配置
-    secret_key: str = "your-secret-key-change-this-in-production"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 120  # 2小时
-    
-    # 数据库配置（测试模式使用内存数据）
-    database_url: str = "sqlite:///./wematch.db"
-    
-    # 微信配置
-    wx_app_id: str = "your-wx-app-id"
-    wx_app_secret: str = "your-wx-app-secret"
+    # 测试模式配置 - 默认关闭
+    test_mode: bool = os.getenv("TEST_MODE", "false").lower() == "true"
     
     # 文件上传配置
-    upload_dir: str = "./uploads"
-    max_file_size: int = 5 * 1024 * 1024  # 5MB
-    
-    # 测试模式
-    test_mode: bool = True
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploads")
+    upload_dir: str = UPLOAD_DIR  # 兼容性别名
     
     class Config:
         env_file = ".env"
 
+# 创建设置实例
 settings = Settings()

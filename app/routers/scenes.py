@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import Dict, List
 from app.models.schemas import BaseResponse, SceneConfig, SceneRole, SceneConfigResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/scenes", tags=["scenes"])
 
 # 场景配置数据
 SCENE_CONFIGS = [
@@ -143,45 +143,32 @@ async def get_scene_configs():
 async def get_scene_config(scene_key: str):
     """
     获取指定场景的配置信息
-    
-    参数:
-    - scene_key: 场景标识 (housing, activity, dating)
-    
-    返回指定场景的详细配置信息
     """
     try:
-        if scene_key not in SCENE_CONFIGS:
+        config = None
+        for scene in SCENE_CONFIGS:
+            if scene.get("key") == scene_key:
+                config = scene
+                break
+
+        if config is None:
             raise HTTPException(status_code=404, detail="场景不存在")
-        
-        config = SCENE_CONFIGS[scene_key]
-        
-        # 构建角色配置
-        roles = {}
-        for role_data in config["roles"]:
-            roles[role_data["key"]] = SceneRole(**role_data)
-        
-        # 构建场景配置
-        scene_config = SceneConfig(
-            key=config["key"],
-            label=config["label"],
-            icon=config["icon"],
-            description=config["description"],
-            roles=roles,
-            profileFields=config["profileFields"],
-            tags=config["tags"]
-        )
-        
-        return BaseResponse(
-            code=0,
-            message="success",
-            data=scene_config
-        )
+
+        return {
+            "code": 0,
+            "message": "success",
+            "data": config
+        }
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {
+            "code": 1500,
+            "message": f"服务器内部错误: {str(e)}",
+            "data": None
+        }
 
-@router.get("/scenes/{scene_key}/roles", response_model=BaseResponse)
+@router.get("/{scene_key}/roles", response_model=BaseResponse)
 async def get_scene_roles(scene_key: str):
     """
     获取指定场景的角色配置
@@ -213,7 +200,7 @@ async def get_scene_roles(scene_key: str):
             "data": None
         }
 
-@router.get("/scenes/{scene_key}/tags", response_model=BaseResponse)
+@router.get("/{scene_key}/tags", response_model=BaseResponse)
 async def get_scene_tags(scene_key: str):
     """
     获取指定场景的标签列表

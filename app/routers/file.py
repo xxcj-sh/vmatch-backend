@@ -17,7 +17,7 @@ async def upload_file(
 ):
     """上传文件接口"""
     # 验证文件类型
-    if not file.content_type.startswith("image/"):
+    if not file.content_type or not file.content_type.startswith("image/"):
         return BaseResponse(
             code=400,
             message="请上传图片文件",
@@ -27,8 +27,9 @@ async def upload_file(
     # 验证文件大小
     # 在实际应用中，应该检查文件大小是否超过限制
     
-    # 在测试模式下，模拟文件上传
-    if settings.test_mode:
+    # 在开发环境中，可以使用模拟数据或真实文件上传
+    if settings.ENVIRONMENT == "development":
+        # 开发环境可以选择模拟上传或真实上传
         result = mock_data_service.upload_file(type)
         return BaseResponse(
             code=0,
@@ -36,15 +37,16 @@ async def upload_file(
             data=FileUploadResponse(**result)
         )
     
-    # 在生产环境中，保存文件
+    # 保存文件到本地
     try:
         # 确保上传目录存在
-        os.makedirs(settings.upload_dir, exist_ok=True)
+        os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
         
         # 生成唯一文件名
-        file_ext = os.path.splitext(file.filename)[1]
+        filename = file.filename or "unknown"
+        file_ext = os.path.splitext(filename)[1]
         file_name = f"{uuid.uuid4()}{file_ext}"
-        file_path = os.path.join(settings.upload_dir, file_name)
+        file_path = os.path.join(settings.UPLOAD_DIR, file_name)
         
         # 保存文件
         with open(file_path, "wb") as f:
@@ -72,8 +74,8 @@ async def delete_file(
 ):
     """删除文件接口"""
     try:
-        # 在测试模式下，模拟文件删除
-        if settings.test_mode:
+        # 在开发环境下，模拟文件删除
+        if settings.ENVIRONMENT == "development":
             return BaseResponse(
                 code=0,
                 message="文件删除成功",
@@ -83,7 +85,7 @@ async def delete_file(
         # 从URL中提取文件名
         if file_url.startswith("/uploads/"):
             file_name = file_url.replace("/uploads/", "")
-            file_path = os.path.join(settings.upload_dir, file_name)
+            file_path = os.path.join(settings.UPLOAD_DIR, file_name)
             
             # 检查文件是否存在
             if not os.path.exists(file_path):

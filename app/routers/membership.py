@@ -5,12 +5,12 @@ from typing import Dict, Any
 from pydantic import BaseModel
 import uuid
 
-router = APIRouter()
+router = APIRouter(prefix="/memberships", tags=["memberships"])
 
 class PaymentRequest(BaseModel):
     planId: str
 
-@router.get("/info", response_model=BaseResponse)
+@router.get("/me", response_model=BaseResponse)
 async def get_membership_info(current_user: Dict[str, Any] = Depends(auth_service.get_current_user)):
     """获取会员信息"""
     # 在测试模式下，返回模拟的会员信息
@@ -29,7 +29,7 @@ async def get_membership_info(current_user: Dict[str, Any] = Depends(auth_servic
         data=membership_data
     )
 
-@router.post("/payment", response_model=BaseResponse)
+@router.post("/orders", response_model=BaseResponse)
 async def create_membership_payment(
     request: PaymentRequest,
     current_user: Dict[str, Any] = Depends(auth_service.get_current_user)

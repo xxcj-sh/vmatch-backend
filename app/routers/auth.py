@@ -12,7 +12,7 @@ from pydantic import ValidationError
 
 router = APIRouter()
 
-@router.post("/login", response_model=BaseResponse)
+@router.post("/sessions", response_model=BaseResponse)
 async def login(
     request: Request,
     auth_service = Depends(get_auth_service)
@@ -67,13 +67,19 @@ async def login(
         print(f"Login error: {str(e)}")  # Debug print
         return BaseResponse(code=1001, message=str(e))
 
-@router.post("/login/phone", response_model=BaseResponse)
+@router.post("/sessions/phone", response_model=BaseResponse)
 async def login_by_phone(
-    phone: str = Form(...),
-    code: str = Form(...),
+    request: Request,
     auth_service = Depends(get_auth_service)
 ):
     try:
+        body = await request.json()
+        phone = body.get("phone")
+        code = body.get("code")
+        
+        if not phone or not code:
+            return BaseResponse(code=422, message="缺少必要参数")
+        
         login_result = auth_service.login_by_phone(phone, code)
         
         return BaseResponse(
@@ -88,11 +94,17 @@ async def login_by_phone(
     except Exception as e:
         return BaseResponse(code=1002, message=str(e))
 
-@router.post("/sms-code", response_model=BaseResponse)
+@router.post("/sms-codes", response_model=BaseResponse)
 async def send_sms_code(
-    phone: str = Form(...)
+    request: Request
 ):
     try:
+        body = await request.json()
+        phone = body.get("phone")
+        
+        if not phone:
+            return BaseResponse(code=422, message="缺少手机号")
+        
         # In test mode, just return success
         return BaseResponse(
             code=0,
@@ -111,4 +123,29 @@ async def validate_token(
         code=0,
         message="success",
         data={"valid": True, "user_info": current_user}
+    )
+
+@router.get("/sessions/current", response_model=BaseResponse)
+async def get_current_session(
+    current_user: dict = Depends(get_current_user)
+):
+    # 获取当前会话信息
+    return BaseResponse(
+        code=0,
+        message="success",
+        data={
+            "valid": True,
+            "user": {
+                "id": current_user.get("id"),
+                "nickName": current_user.get("nickName")
+            }
+        }
+    )
+
+@router.delete("/sessions/current", response_model=BaseResponse)
+async def logout():
+    # 登出操作
+    return BaseResponse(
+        code=0,
+        message="Logged out successfully"
     )

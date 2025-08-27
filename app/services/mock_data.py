@@ -1,4 +1,4 @@
-from typing import Dict, List, Any, Optional
+from typing import Any, Optional
 import uuid
 import time
 import random
@@ -10,11 +10,11 @@ class MockDataService:
     
     def __init__(self):
         """初始化模拟数据"""
-        self.users: Dict[str, Dict[str, Any]] = {}
-        self.cards: Dict[str, Dict[str, Any]] = {}
-        self.matches: Dict[str, Dict[str, Any]] = {}
-        self.messages: Dict[str, List[Dict[str, Any]]] = {}
-        self.sms_codes: Dict[str, Dict[str, Any]] = {}
+        self.users: dict[str, dict[str, Any]] = {}
+        self.cards: dict[str, dict[str, Any]] = {}
+        self.matches: dict[str, dict[str, Any]] = {}
+        self.messages: dict[str, list[dict[str, Any]]] = {}
+        self.sms_codes: dict[str, dict[str, Any]] = {}
         
         # 用户数据本地存储文件路径
         self.user_data_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "test_user_data.json")
@@ -116,7 +116,7 @@ class MockDataService:
                 "gender": 2,
                 "age": 26,
                 "occupation": "设计师",
-                "location": ["上海市", "上海市", "浦东新区"],
+                "location": "上海市 上海市 徐汇区",
                 "bio": "喜欢设计和摄影",
                 "matchType": "dating",
                 "userRole": "provider",
@@ -172,21 +172,27 @@ class MockDataService:
             self.send_message("match_001", "user_001", "你好，很高兴认识你！", "text")
             self.send_message("match_001", "card_001", "你好，我也很高兴认识你！", "text")
     
-    def create_user(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_user(self, user_data: dict[str, Any]) -> dict[str, Any]:
         """创建用户"""
         user_id = user_data.get("id") or str(uuid.uuid4())
         user = {
             "id": user_id,
             **user_data
         }
+        print(f"DEBUG: Creating user with ID: {user_id}")
         self.users[user_id] = user
+        print(f"DEBUG: Users after creation: {list(self.users.keys())}")
         return user
     
-    def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+    def get_user_by_id(self, user_id: str) -> Optional[dict[str, Any]]:
         """根据ID获取用户"""
-        return self.users.get(user_id)
+        print(f"DEBUG: Looking for user_id: {user_id}")
+        print(f"DEBUG: Available users: {list(self.users.keys())}")
+        result = self.users.get(user_id)
+        print(f"DEBUG: Found user: {result is not None}")
+        return result
     
-    def get_user_by_token(self, token: str) -> Optional[Dict[str, Any]]:
+    def get_user_by_token(self, token: str) -> Optional[dict[str, Any]]:
         """根据token获取用户信息（测试模式）"""
         # 测试模式下，token就是用户ID
         # 支持测试用例中的token
@@ -197,7 +203,7 @@ class MockDataService:
         else:
             return self.users.get(token)
     
-    def update_profile(self, user_id: str, profile_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def update_profile(self, user_id: str, profile_data: dict[str, Any]) -> Optional[dict[str, Any]]:
         """更新用户资料"""
         user = self.get_user_by_id(user_id)
         if not user:
@@ -210,7 +216,7 @@ class MockDataService:
         
         return user
     
-    def create_card(self, card_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_card(self, card_data: dict[str, Any]) -> dict[str, Any]:
         """创建卡片"""
         card_id = card_data.get("id") or str(uuid.uuid4())
         card = {
@@ -233,7 +239,7 @@ class MockDataService:
         self.cards[card_id] = card
         return card
     
-    def get_cards(self, match_type: str, user_role: str, page: int, page_size: int) -> Dict[str, Any]:
+    def get_cards(self, match_type: str, user_role: str, page: int, page_size: int) -> dict[str, Any]:
         """获取匹配卡片"""
         # 对于房源匹配，seeker用户应该看到所有房源卡片（不管房源的userRole）
         if match_type == "housing":
@@ -258,7 +264,7 @@ class MockDataService:
             "pageSize": page_size
         }
     
-    def create_match(self, user_id: str, card_id: str, action: str) -> Dict[str, Any]:
+    def create_match(self, user_id: str, card_id: str, action: str) -> dict[str, Any]:
         """创建匹配"""
         # 在实际应用中，需要检查用户是否已经对该卡片进行过操作
         
@@ -290,7 +296,7 @@ class MockDataService:
         
         return result
     
-    def get_matches(self, user_id: str, status: str, page: int, page_size: int) -> Dict[str, Any]:
+    def get_matches(self, user_id: str, status: str, page: int, page_size: int) -> dict[str, Any]:
         """获取匹配列表"""
         filtered_matches = []
         
@@ -318,7 +324,7 @@ class MockDataService:
             "pageSize": page_size
         }
     
-    def get_match_by_id(self, match_id: str, user_id: str = None) -> Dict[str, Any]:
+    def get_match_by_id(self, match_id: str, user_id: str = None) -> dict[str, Any]:
         """根据ID获取匹配"""
         match = self.matches.get(match_id)
         if not match:
@@ -333,7 +339,7 @@ class MockDataService:
         card_info = self.cards.get(other_user_id, {}) or self.users.get(other_user_id, {})
         return {**match, "cardInfo": card_info}
     
-    def get_chat_history(self, match_id: str, page: int, page_size: int) -> Dict[str, Any]:
+    def get_chat_history(self, match_id: str, page: int, page_size: int) -> dict[str, Any]:
         """获取聊天记录"""
         messages = self.messages.get(match_id, [])
         
@@ -350,7 +356,7 @@ class MockDataService:
             "pageSize": page_size
         }
     
-    def send_message(self, match_id: str, sender_id: str, content: str, msg_type: str) -> Dict[str, Any]:
+    def send_message(self, match_id: str, sender_id: str, content: str, msg_type: str) -> dict[str, Any]:
         """发送消息"""
         if match_id not in self.messages:
             self.messages[match_id] = []
@@ -378,7 +384,7 @@ class MockDataService:
         
         return message
     
-    def upload_file(self, file_type: str) -> Dict[str, Any]:
+    def upload_file(self, file_type: str) -> dict[str, Any]:
         """上传文件"""
         # 模拟文件上传
         file_id = str(uuid.uuid4())

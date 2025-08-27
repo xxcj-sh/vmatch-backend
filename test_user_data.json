@@ -1,16 +1,23 @@
 {
   "user_001": {
     "id": "user_001",
-    "nickName": "Xiao Ming Updated",
+    "nickName": "小明",
     "avatarUrl": "https://picsum.photos/200/200?random=avatar1",
     "gender": 1,
-    "age": 18,
-    "occupation": "学生",
-    "location": "广东省 广州市 黄埔区",
-    "bio": "",
+    "age": 25,
+    "occupation": "软件工程师",
+    "location": [
+      "北京市",
+      "朝阳区"
+    ],
+    "bio": "喜欢编程和旅行",
     "matchType": "dating",
     "userRole": "seeker",
-    "interests": [],
+    "interests": [
+      "编程",
+      "旅行",
+      "音乐"
+    ],
     "preferences": {
       "ageRange": [
         25,
@@ -21,7 +28,7 @@
     "phone": "13800138001",
     "email": "xiaoming@example.com",
     "education": "本科",
-    "joinDate": 1714147200
+    "joinDate": 1756319838
   },
   "card_001": {
     "id": "card_001",
@@ -30,11 +37,7 @@
     "gender": 2,
     "age": 26,
     "occupation": "设计师",
-    "location": [
-      "上海市",
-      "上海市",
-      "浦东新区"
-    ],
+    "location": "上海市 上海市 徐汇区",
     "bio": "喜欢设计和摄影",
     "matchType": "dating",
     "userRole": "provider",
@@ -49,6 +52,34 @@
         35
       ],
       "distance": 15
+    }
+  },
+  "test_user_001": {
+    "id": "test_user_001",
+    "phone": "13800138000",
+    "nickName": "测试11用户",
+    "avatarUrl": "https://picsum.photos/200/200?random=100",
+    "gender": 1,
+    "age": 30,
+    "occupation": "软件工程师",
+    "location": "上海市 上海市 徐汇区",
+    "bio": "这是一个测试账号，用于开发和测试微信小程序",
+    "education": "本科",
+    "interests": [
+      "编程",
+      "测试",
+      "开发"
+    ],
+    "joinDate": 1628553600,
+    "email": "test@example.com",
+    "matchType": "dating",
+    "userRole": "user",
+    "preferences": {
+      "ageRange": [
+        25,
+        35
+      ],
+      "distance": 20
     }
   }
 }
