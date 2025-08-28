@@ -16,9 +16,9 @@ async def get_membership_info(current_user: Dict[str, Any] = Depends(auth_servic
     # 在测试模式下，返回模拟的会员信息
     membership_data = {
         "level": "free",
-        "levelName": "免费会员",
+        "levelName": "普通会员",
         "expireDate": None,
-        "features": ["基础匹配", "每日10次滑动"],
+        "features": ["基础匹配", "每日 10 次匹配选择"],
         "remainingSwipes": 10,
         "totalSwipes": 10
     }

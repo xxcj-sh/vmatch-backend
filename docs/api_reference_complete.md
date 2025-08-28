@@ -37,6 +37,72 @@
 ### 会员管理 (Memberships)
 - `GET /memberships/me` - 获取会员信息
 - `POST /memberships/orders` - 创建会员订单
+- `GET /memberships/orders` - 查询会员订单列表
+- `GET /memberships/orders/{order_id}` - 查询单个会员订单详情
+
+### 7.3 查询会员订单列表
+**GET** `/memberships/orders`
+
+查询用户的会员订单列表
+
+**查询参数:**
+- `user_id` (string, required): 用户ID
+- `status` (string, optional): 订单状态过滤 (pending, paid, cancelled, refunded)
+- `page` (int, optional): 页码，默认1
+- `page_size` (int, optional): 每页数量，默认10，最大100
+
+**响应示例:**
+```json
+{
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "orders": [
+      {
+        "id": "20230615001",
+        "planName": "月度会员",
+        "amount": 19.9,
+        "date": "2023-06-15",
+        "status": "paid",
+        "statusText": "已支付"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "page_size": 10,
+      "total": 1,
+      "total_pages": 1
+    }
+  }
+}
+```
+
+### 7.4 查询单个会员订单详情
+**GET** `/memberships/orders/{order_id}`
+
+查询单个会员订单详情
+
+**路径参数:**
+- `order_id` (string): 订单ID
+
+**查询参数:**
+- `user_id` (string, required): 用户ID
+
+**响应示例:**
+```json
+{
+  "code": 200,
+  "message": "查询成功",
+  "data": {
+    "id": "20230615001",
+    "planName": "月度会员",
+    "amount": 19.9,
+    "date": "2023-06-15",
+    "status": "paid",
+    "statusText": "已支付"
+  }
+}
+```
 
 ### 房源管理 (Properties)
 - `GET /properties/{propertyId}` - 获取房源详情

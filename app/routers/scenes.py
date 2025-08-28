@@ -85,13 +85,13 @@ SCENE_CONFIGS = [
         "roles": [
             {
                 "role": "seeker",
-                "label": "寻找对象",
+                "label": "女生",
                 "description": "寻找恋爱对象"
             },
             {
                 "role": "provider",
-                "label": "被寻找",
-                "description": "被寻找的恋爱对象"
+                "label": "男生",
+                "description": "寻找恋爱对象"
             }
         ],
         "profileFields": [
