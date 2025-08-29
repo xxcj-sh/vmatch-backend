@@ -2,4 +2,5 @@
 .codebuddy
 .pytest_cache
 .env.example
+uploads
 __pycache__
