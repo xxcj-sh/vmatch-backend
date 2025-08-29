@@ -25,17 +25,21 @@ async def upload_file(
         )
     
     # 验证文件大小
-    # 在实际应用中，应该检查文件大小是否超过限制
+    file_size = 0
+    content = await file.read()
+    file_size = len(content)
     
-    # 在开发环境中，可以使用模拟数据或真实文件上传
-    if settings.ENVIRONMENT == "development":
-        # 开发环境可以选择模拟上传或真实上传
-        result = mock_data_service.upload_file(type)
+    # 检查文件大小是否超过限制 (默认10MB)
+    max_file_size = getattr(settings, 'MAX_FILE_SIZE', 10 * 1024 * 1024)
+    if file_size > max_file_size:
         return BaseResponse(
-            code=0,
-            message="success",
-            data=FileUploadResponse(**result)
+            code=400,
+            message=f"文件大小超过限制，最大允许 {max_file_size // (1024 * 1024)}MB",
+            data=None
         )
+    
+    # 重置文件指针，因为我们已经读取了文件内容
+    await file.seek(0)
     
     # 保存文件到本地
     try:

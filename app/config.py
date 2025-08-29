@@ -25,7 +25,8 @@ class Settings(BaseSettings):
     test_mode: bool = os.getenv("TEST_MODE", "false").lower() == "true"
     
     # 文件上传配置
-    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "./uploads")
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", os.path.join(BASE_DIR, "uploads"))
     upload_dir: str = UPLOAD_DIR  # 兼容性别名
     
     class Config:

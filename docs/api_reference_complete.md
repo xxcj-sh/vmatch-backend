@@ -14,6 +14,13 @@
 - `PUT /users/me` - 更新当前用户信息
 - `GET /users/{userId}` - 获取其他用户信息
 - `GET /users/me/stats` - 获取用户统计
+- `GET /users/me/profiles` - 获取用户所有角色资料
+- `GET /users/me/profiles/{scene_type}` - 获取特定场景下的角色资料
+- `GET /users/me/profiles/{scene_type}/{role_type}` - 获取特定角色的资料
+- `POST /users/me/profiles` - 创建用户角色资料
+- `PUT /users/me/profiles/{profile_id}` - 更新用户角色资料
+- `DELETE /users/me/profiles/{profile_id}` - 删除用户角色资料
+- `PATCH /users/me/profiles/{profile_id}/toggle` - 切换资料激活状态
 
 ### 个人资料 (Profiles)
 - `GET /profiles/me` - 获取个人资料
@@ -325,6 +332,256 @@ curl -X GET http://localhost:8000/api/v1/users/me \
     "matchCount": 10,
     "messageCount": 50,
     "favoriteCount": 5
+  }
+}
+```
+
+### 2.5 用户角色资料管理
+
+用户角色资料系统允许同一用户在不同场景下拥有多个不同的角色资料。每个用户可以创建多个资料，用于不同的匹配场景（如找房、交友、活动等）。
+
+#### 支持的场景和角色
+
+**1. 找房场景 (housing)**
+- `housing_seeker`: 找房者
+- `housing_provider`: 房源提供者
+
+**2. 交友场景 (dating)**
+- `dating_seeker`: 交友者
+
+**3. 活动场景 (activity)**
+- `activity_organizer`: 活动组织者
+- `activity_participant`: 活动参与者
+
+#### 获取用户所有角色资料
+**GET** `/users/me/profiles`
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "user_id": "test_user_001",
+    "total_count": 5,
+    "active_count": 5,
+    "by_scene": [
+      {
+        "scene_type": "housing",
+        "profiles": [
+          {
+            "id": "profile_housing_seeker_001",
+            "user_id": "test_user_001",
+            "role_type": "housing_seeker",
+            "scene_type": "housing",
+            "display_name": "小李找房",
+            "avatar_url": "https://example.com/avatars/housing_seeker.jpg",
+            "bio": "刚毕业的程序员，寻找合适的合租房源",
+            "profile_data": {...},
+            "preferences": {...},
+            "tags": ["程序员", "安静", "整洁"],
+            "is_active": 1,
+            "visibility": "public",
+            "created_at": "2025-01-29T01:00:00",
+            "updated_at": "2025-01-29T01:00:00"
+          }
+        ]
+      }
+    ],
+    "all_profiles": [...]
+  }
+}
+```
+
+#### 获取特定场景下的角色资料
+**GET** `/users/me/profiles/{scene_type}`
+
+**路径参数:**
+- `scene_type`: 场景类型 (housing/dating/activity)
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "scene_type": "housing",
+    "profiles": [
+      {
+        "id": "profile_housing_seeker_001",
+        "role_type": "housing_seeker",
+        "display_name": "小李找房",
+        "avatar_url": "https://example.com/avatars/housing_seeker.jpg",
+        "bio": "刚毕业的程序员，寻找合适的合租房源",
+        "profile_data": {...},
+        "preferences": {...},
+        "tags": ["程序员", "安静", "整洁"],
+        "is_active": 1,
+        "visibility": "public",
+        "created_at": "2025-01-29T01:00:00",
+        "updated_at": "2025-01-29T01:00:00"
+      }
+    ]
+  }
+}
+```
+
+#### 获取特定角色的资料
+**GET** `/users/me/profiles/{scene_type}/{role_type}`
+
+**路径参数:**
+- `scene_type`: 场景类型
+- `role_type`: 角色类型
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "profile_housing_seeker_001",
+    "user_id": "test_user_001",
+    "role_type": "housing_seeker",
+    "scene_type": "housing",
+    "display_name": "小李找房",
+    "profile_data": {
+      "budget_range": [2000, 3500],
+      "preferred_areas": ["朝阳区", "海淀区"],
+      "room_type": "single_room",
+      "occupation": "软件工程师"
+    },
+    "preferences": {
+      "roommate_gender": "any",
+      "shared_facilities": ["kitchen", "living_room"]
+    },
+    "tags": ["程序员", "安静", "整洁"],
+    "is_active": 1,
+    "visibility": "public",
+    "created_at": "2025-01-29T01:00:00",
+    "updated_at": "2025-01-29T01:00:00"
+  }
+}
+```
+
+#### 创建用户角色资料
+**POST** `/users/me/profiles`
+
+**请求体:**
+```json
+{
+  "role_type": "housing_seeker",
+  "scene_type": "housing",
+  "display_name": "小李找房",
+  "avatar_url": "https://example.com/avatar.jpg",
+  "bio": "寻找合适的合租房源",
+  "profile_data": {
+    "budget_range": [2000, 3500],
+    "preferred_areas": ["朝阳区"]
+  },
+  "preferences": {
+    "roommate_gender": "any"
+  },
+  "tags": ["程序员", "安静"],
+  "visibility": "public"
+}
+```
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "profile_housing_seeker_002",
+    "user_id": "current_user_id",
+    "role_type": "housing_seeker",
+    "scene_type": "housing",
+    "display_name": "小李找房",
+    "avatar_url": "https://example.com/avatar.jpg",
+    "bio": "寻找合适的合租房源",
+    "profile_data": {
+      "budget_range": [2000, 3500],
+      "preferred_areas": ["朝阳区"]
+    },
+    "preferences": {
+      "roommate_gender": "any"
+    },
+    "tags": ["程序员", "安静"],
+    "is_active": 1,
+    "visibility": "public",
+    "created_at": "2025-01-29T01:00:00",
+    "updated_at": "2025-01-29T01:00:00"
+  }
+}
+```
+
+#### 更新用户角色资料
+**PUT** `/users/me/profiles/{profile_id}`
+
+**路径参数:**
+- `profile_id`: 资料ID
+
+**请求体:** (所有字段都是可选的)
+```json
+{
+  "display_name": "更新后的名称",
+  "bio": "更新后的简介",
+  "profile_data": {...},
+  "preferences": {...},
+  "tags": [...],
+  "visibility": "private"
+}
+```
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "profile_housing_seeker_001",
+    "display_name": "更新后的名称",
+    "bio": "更新后的简介",
+    "updated_at": "2025-01-29T02:00:00"
+  }
+}
+```
+
+#### 删除用户角色资料
+**DELETE** `/users/me/profiles/{profile_id}`
+
+**路径参数:**
+- `profile_id`: 资料ID
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "deleted_profile_id": "profile_housing_seeker_001"
+  }
+}
+```
+
+#### 切换资料激活状态
+**PATCH** `/users/me/profiles/{profile_id}/toggle`
+
+**路径参数:**
+- `profile_id`: 资料ID
+
+**查询参数:**
+- `is_active`: 激活状态 (1-激活, 0-停用)
+
+**响应示例:**
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "id": "profile_housing_seeker_001",
+    "is_active": 1,
+    "updated_at": "2025-01-29T02:00:00"
   }
 }
 ```

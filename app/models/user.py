@@ -33,3 +33,4 @@ class User(Base):
     
     # 关系
     matches = relationship("Match", back_populates="user")
+    profiles = relationship("UserProfile", back_populates="user")
