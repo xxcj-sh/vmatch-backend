@@ -942,12 +942,27 @@ curl -X POST http://localhost:8000/api/v1/files \
 
 创建会员购买订单。
 
-**请求体：**
+**请求参数：**
+- 需要认证
+- Content-Type: `application/json`
+
+**请求体参数：**
+| 参数名 | 类型 | 必填 | 描述 |
+|--------|------|------|------|
+| planId | string | 是 | 会员套餐ID，用于标识要购买的会员计划 |
+
+**请求体示例：**
 ```json
 {
   "planId": "premium_monthly"
 }
 ```
+
+**可能的错误：**
+- `422 Unprocessable Entity`: 请求参数验证失败
+  - 缺少必填字段 `planId`
+  - `planId` 字段类型不正确（必须为字符串）
+  - `planId` 字段为空或null
 
 **响应：**
 ```json
@@ -958,9 +973,34 @@ curl -X POST http://localhost:8000/api/v1/files \
     "orderId": "order_123456",
     "amount": 30.00,
     "status": "pending",
-    "paymentUrl": "https://pay.example.com/order_123456"
+    "paymentUrl": "https://pay.example.com/order_123456",
+    "wxPayParams": {
+      "timeStamp": "1640995200",
+      "nonceStr": "abcd1234efgh5678ijkl9012mnop3456",
+      "package": "prepay_id=wx20211231123456789012",
+      "signType": "MD5",
+      "paySign": "A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6"
+    }
   }
 }
+```
+
+**微信小程序调用示例：**
+```javascript
+// 获取支付参数后调用微信支付
+wx.requestPayment({
+  timeStamp: response.data.wxPayParams.timeStamp,
+  nonceStr: response.data.wxPayParams.nonceStr,
+  package: response.data.wxPayParams.package,
+  signType: response.data.wxPayParams.signType,
+  paySign: response.data.wxPayParams.paySign,
+  success: function(res) {
+    console.log('支付成功', res);
+  },
+  fail: function(res) {
+    console.log('支付失败', res);
+  }
+});
 ```
 
 ---
