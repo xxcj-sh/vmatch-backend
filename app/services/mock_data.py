@@ -300,9 +300,12 @@ class MockDataService:
         """获取匹配列表数据 - 支持API查询参数"""
         matches = []
         
+        # 使用枚举值生成数据
+        from app.models.enums import MatchStatus, MatchType, Region, Interest, Education, HouseType, ActivityType
+        
         # 生成不同状态和类型的匹配数据
-        statuses = ["pending", "accepted", "rejected", "expired"]
-        match_types = ["housing", "activity", "dating"]
+        statuses = [status.value for status in MatchStatus]
+        match_types = [mtype.value for mtype in MatchType if mtype != MatchType.BUSINESS]  # 排除商务类型
         
         for i in range(1, 51):  # 生成50条匹配数据
             match_status = statuses[(i - 1) % len(statuses)]
@@ -340,27 +343,50 @@ class MockDataService:
                 }
             }
             
-            # 根据匹配类型添加特定字段
+            # 根据匹配类型添加特定字段，使用枚举值
             if match_type_val == "activity":
+                activity_types = [atype.value for atype in ActivityType]
+                regions = [region.value for region in Region]
+                
                 match_data.update({
                     "activity_id": f"activity_{1000 + i}",
-                    "activity_name": f"测试活动{i}",
-                    "activity_location": f"北京市朝阳区测试地点{i}",
+                    "activity_name": f"{activity_types[i % len(activity_types)]}活动{i}",
+                    "activity_type": activity_types[i % len(activity_types)],
+                    "activity_location": f"{regions[i % len(regions)]}测试地点{i}",
                     "activity_time": f"2024-12-{(i % 28) + 1:02d}T10:00:00Z",
+                    "skill_level": ["新手", "初级", "中级", "高级", "专家"][i % 5],
+                    "group_size": ["1-2人", "3-5人", "5-10人", "10人以上"][i % 4],
+                    "budget": ["免费", "0-100元", "100-300元", "300-500元", "500-1000元"][i % 5],
                     "message": f"这是第{i}条测试匹配消息" if i % 3 == 0 else None,
                     "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
                 })
             elif match_type_val == "housing":
+                house_types = [htype.value for htype in HouseType]
+                regions = [region.value for region in Region]
+                
                 match_data.update({
                     "property_id": f"property_{1000 + i}",
-                    "property_title": f"测试房源{i}",
-                    "property_location": f"北京市朝阳区房源地点{i}",
+                    "property_title": f"{house_types[i % len(house_types)]} - 测试房源{i}",
+                    "house_type": house_types[i % len(house_types)],
+                    "property_location": f"{regions[i % len(regions)]}测试小区{i}",
                     "rent_price": 2000 + i * 100,
+                    "budget_range": ["1000-2000元", "2000-3000元", "3000-5000元", "5000-8000元", "8000元以上"][i % 5],
+                    "decoration": ["精装修", "简装修", "毛坯房"][i % 3],
+                    "facilities": ["空调", "洗衣机", "冰箱", "WiFi", "电视"][:((i % 5) + 1)],
                     "message": f"对这个房源很感兴趣" if i % 3 == 0 else None,
                     "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
                 })
             else:  # dating
+                educations = [edu.value for edu in Education]
+                interests = [interest.value for interest in Interest]
+                
                 match_data.update({
+                    "education": educations[i % len(educations)],
+                    "interests": interests[:((i % 5) + 1)],
+                    "income_range": ["5万以下", "5-10万", "10-20万", "20-30万", "30-50万", "50万以上"][i % 6],
+                    "height_range": ["160-165", "165-170", "170-175", "175-180", "180-185"][i % 5],
+                    "marital_status": ["未婚", "离异", "已婚"][i % 3],
+                    "work_industry": ["互联网", "金融", "教育", "医疗", "服务业"][i % 5],
                     "message": f"很高兴认识你" if i % 3 == 0 else None,
                     "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
                 })

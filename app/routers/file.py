@@ -76,8 +76,12 @@ async def upload_file(
     
     # 保存文件到本地
     try:
-        # 确保上传目录存在
-        os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+        # 获取用户ID，如果未登录则使用默认目录
+        user_id = current_user.get('id', 'anonymous') if current_user else 'anonymous'
+        
+        # 创建用户专属的上传目录
+        user_upload_dir = os.path.join(settings.UPLOAD_DIR, str(user_id))
+        os.makedirs(user_upload_dir, exist_ok=True)
         
         # 生成唯一文件名
         filename = file.filename or "unknown"
@@ -124,15 +128,15 @@ async def upload_file(
                     file_ext = '.mp4'  # 默认
         
         file_name = f"{uuid.uuid4()}{file_ext}"
-        file_path = os.path.join(settings.UPLOAD_DIR, file_name)
+        file_path = os.path.join(user_upload_dir, file_name)
         
         # 保存文件
         with open(file_path, "wb") as f:
             content = await file.read()
             f.write(content)
         
-        # 返回文件URL
-        file_url = f"/uploads/{file_name}"
+        # 返回文件URL（包含用户ID路径）
+        file_url = f"/uploads/{user_id}/{file_name}"
         return BaseResponse(
             code=0,
             message="success",
@@ -160,10 +164,29 @@ async def delete_file(
                 data=None
             )
         
-        # 从URL中提取文件名
+        # 从URL中提取用户ID和文件名
         if file_url.startswith("/uploads/"):
-            file_name = file_url.replace("/uploads/", "")
-            file_path = os.path.join(settings.UPLOAD_DIR, file_name)
+            # 移除 /uploads/ 前缀
+            path_parts = file_url.replace("/uploads/", "").split("/")
+            
+            if len(path_parts) >= 2:
+                # 新格式：/uploads/user_id/filename
+                url_user_id = path_parts[0]
+                file_name = "/".join(path_parts[1:])  # 支持多级路径
+                
+                # 验证用户权限：只能删除自己的文件
+                if current_user and str(current_user.get('user_id')) != url_user_id:
+                    return BaseResponse(
+                        code=403,
+                        message="无权限删除此文件",
+                        data=None
+                    )
+                
+                file_path = os.path.join(settings.UPLOAD_DIR, url_user_id, file_name)
+            else:
+                # 兼容旧格式：/uploads/filename（直接在根目录）
+                file_name = path_parts[0]
+                file_path = os.path.join(settings.UPLOAD_DIR, file_name)
             
             # 检查文件是否存在
             if not os.path.exists(file_path):
