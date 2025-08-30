@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", os.path.join(BASE_DIR, "uploads"))
     upload_dir: str = UPLOAD_DIR  # 兼容性别名
     
+    # 文件大小限制配置
+    MAX_FILE_SIZE: int = int(os.getenv("MAX_FILE_SIZE", 100 * 1024 * 1024))  # 100MB (通用限制)
+    MAX_IMAGE_SIZE: int = int(os.getenv("MAX_IMAGE_SIZE", 10 * 1024 * 1024))   # 10MB (图片限制)
+    MAX_VIDEO_SIZE: int = int(os.getenv("MAX_VIDEO_SIZE", 500 * 1024 * 1024))  # 500MB (视频限制)
+    
     class Config:
         env_file = ".env"
 

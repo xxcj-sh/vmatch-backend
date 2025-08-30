@@ -470,4 +470,15 @@ class AuthService:
         
         return user
 
+    @staticmethod
+    async def get_current_user_optional(authorization: Optional[str] = Header(None)):
+        """获取当前登录用户（可选，不抛出异常）"""
+        try:
+            return await AuthService.get_current_user(authorization)
+        except HTTPException:
+            # 在测试模式下返回默认用户
+            if settings.ENVIRONMENT == "development":
+                return {"id": "test_user", "username": "test_user"}
+            return None
+
 auth_service = AuthService()
