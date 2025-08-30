@@ -296,8 +296,92 @@ class MockDataService:
         
         return result
     
-    def get_matches(self, user_id: str, status: str, page: int, page_size: int) -> dict[str, Any]:
-        """获取匹配列表"""
+    def get_matches(self, status: str = None, match_type: str = None, page: int = 1, page_size: int = 10):
+        """获取匹配列表数据 - 支持API查询参数"""
+        matches = []
+        
+        # 生成不同状态和类型的匹配数据
+        statuses = ["pending", "accepted", "rejected", "expired"]
+        match_types = ["housing", "activity", "dating"]
+        
+        for i in range(1, 51):  # 生成50条匹配数据
+            match_status = statuses[(i - 1) % len(statuses)]
+            match_type_val = match_types[(i - 1) % len(match_types)]
+            
+            # 状态筛选
+            if status and status != "null" and match_status != status:
+                continue
+                
+            # 类型筛选
+            if match_type and match_type_val != match_type:
+                continue
+            
+            match_data = {
+                "id": f"match_{i:03d}",
+                "user1_id": "test_user_001",
+                "user2_id": f"test_user_{(i % 4) + 2:03d}",
+                "match_type": match_type_val,
+                "status": match_status,
+                "score": round(0.5 + (i % 50) / 100, 2),
+                "is_active": True,
+                "created_at": f"2024-11-{(i % 28) + 1:02d}T08:00:00Z",
+                "updated_at": f"2024-11-{(i % 28) + 1:02d}T08:00:00Z",
+                "user1": {
+                    "id": "test_user_001",
+                    "username": "test_user_001",
+                    "nick_name": "测试用户001",
+                    "avatar_url": "https://example.com/avatar1.jpg"
+                },
+                "user2": {
+                    "id": f"test_user_{(i % 4) + 2:03d}",
+                    "username": f"test_user_{(i % 4) + 2:03d}",
+                    "nick_name": f"测试用户{(i % 4) + 2:03d}",
+                    "avatar_url": f"https://example.com/avatar{(i % 4) + 2}.jpg"
+                }
+            }
+            
+            # 根据匹配类型添加特定字段
+            if match_type_val == "activity":
+                match_data.update({
+                    "activity_id": f"activity_{1000 + i}",
+                    "activity_name": f"测试活动{i}",
+                    "activity_location": f"北京市朝阳区测试地点{i}",
+                    "activity_time": f"2024-12-{(i % 28) + 1:02d}T10:00:00Z",
+                    "message": f"这是第{i}条测试匹配消息" if i % 3 == 0 else None,
+                    "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
+                })
+            elif match_type_val == "housing":
+                match_data.update({
+                    "property_id": f"property_{1000 + i}",
+                    "property_title": f"测试房源{i}",
+                    "property_location": f"北京市朝阳区房源地点{i}",
+                    "rent_price": 2000 + i * 100,
+                    "message": f"对这个房源很感兴趣" if i % 3 == 0 else None,
+                    "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
+                })
+            else:  # dating
+                match_data.update({
+                    "message": f"很高兴认识你" if i % 3 == 0 else None,
+                    "expires_at": f"2024-12-{(i % 28) + 1:02d}T08:00:00Z"
+                })
+            
+            matches.append(match_data)
+        
+        # 分页处理
+        total = len(matches)
+        start_idx = (page - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_matches = matches[start_idx:end_idx]
+        
+        return {
+            "list": paginated_matches,
+            "total": total,
+            "page": page,
+            "pageSize": page_size
+        }
+
+    def get_matches_old(self, user_id: str, status: str, page: int, page_size: int) -> dict[str, Any]:
+        """获取匹配列表 - 原有方法保持兼容性"""
         filtered_matches = []
         
         for match in self.matches.values():

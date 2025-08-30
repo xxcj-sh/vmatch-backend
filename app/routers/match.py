@@ -98,6 +98,35 @@ def get_match_cards(
         },
     }
 
+# 新增匹配列表端点
+@router.get("")
+def get_matches_list(
+    status: Optional[str] = Query(None),
+    matchType: Optional[str] = Query(None),
+    page: int = Query(1),
+    pageSize: int = Query(10)
+):
+    """获取匹配列表 - 支持API文档中的查询"""
+    # 使用mock数据服务获取匹配列表
+    result = mock_data_service.get_matches(
+        status=status, 
+        match_type=matchType, 
+        page=page, 
+        page_size=pageSize
+    )
+    
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "matches": result.get("list", []),
+            "total": result.get("total", 0),
+            "page": result.get("page", page),
+            "pageSize": result.get("pageSize", pageSize),
+            "totalPages": (result.get("total", 0) + pageSize - 1) // pageSize
+        }
+    }
+
 @router.get("/{match_id}", response_model=Match)
 def read_match(match_id: int, db: Session = Depends(get_db)):
     db_match = db_service.get_match(db, match_id=match_id)
